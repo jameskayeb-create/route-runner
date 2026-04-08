@@ -4,7 +4,7 @@ set -e
 # If the database doesn't exist yet, seed it with initial data
 if [ ! -f "$DATABASE_PATH" ]; then
   echo "No database found at $DATABASE_PATH — seeding with initial data..."
-  npx tsx seed.ts
+  node dist/seed.cjs
   echo "Seed complete."
 else
   echo "Database found at $DATABASE_PATH — skipping seed."
