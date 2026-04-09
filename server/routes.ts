@@ -5,7 +5,14 @@ import { loginSchema, registerSchema, insertRouteSchema } from "@shared/schema";
 import * as crypto from "crypto";
 import { Resend } from "resend";
 
-const resend = new Resend(process.env.RESEND_API_KEY);
+// Lazy init — Resend throws if no API key at construction time
+let _resend: Resend | null = null;
+function getResend(): Resend {
+  if (!_resend) {
+    _resend = new Resend(process.env.RESEND_API_KEY);
+  }
+  return _resend;
+}
 
 function shopifyLog(message: string) {
   const formattedTime = new Date().toLocaleTimeString("en-US", {
@@ -168,10 +175,10 @@ export async function registerRoutes(server: Server, app: Express) {
       const rawBody = Buffer.isBuffer(req.body) ? req.body : Buffer.from(String(req.body));
 
       // HMAC verification in production
-      if (process.env.NODE_ENV === "production") {
+      if (process.env.SHOPIFY_WEBHOOK_SECRET) {
         const hmacHeader = req.headers["x-shopify-hmac-sha256"] as string;
-        if (!hmacHeader || !process.env.SHOPIFY_WEBHOOK_SECRET) {
-          shopifyLog("missing HMAC header or secret");
+        if (!hmacHeader) {
+          shopifyLog("missing HMAC header");
           return res.status(401).json({ error: "Unauthorized" });
         }
         const computed = crypto
@@ -212,7 +219,7 @@ export async function registerRoutes(server: Server, app: Express) {
           if (existing) {
             shopifyLog(`user ${customerEmail} already exists, sending notice`);
             try {
-              await resend.emails.send({
+              await getResend().emails.send({
                 from: "Route Runner <noreply@sixfigurecouriers.com>",
                 to: customerEmail,
                 subject: "Route Runner — You Already Have Access",
@@ -252,7 +259,7 @@ export async function registerRoutes(server: Server, app: Express) {
 
           // Send welcome email
           try {
-            await resend.emails.send({
+            await getResend().emails.send({
               from: "Route Runner <noreply@sixfigurecouriers.com>",
               to: customerEmail,
               subject: "Welcome to Route Runner — Your Login Details",
