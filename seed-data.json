@@ -1733,6 +1733,412 @@
       "sourceUrl": "https://couriergigs.com/jobs",
       "sourcePage": "March 2026 search",
       "importedOn": "2026-03-02"
+    },
+    {
+      "companyName": "Dropoff, Inc.",
+      "state": "Utah",
+      "city": "Salt Lake City",
+      "equipmentType": "Cargo Van",
+      "payMin": "300",
+      "payMax": "300",
+      "payUnit": "Per Day",
+      "description": "Cargo Van Owner Operator for same-day last mile delivery service. Contract route.",
+      "sourceUrl": "https://couriergigs.com/jobs/415508610-cargo-van-owner-operator-salt-lake-city-ut-make-300+-a-day",
+      "sourceName": "CourierGigs.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "General Logistics Carrier LLC",
+      "state": "Utah",
+      "city": "Salt Lake City",
+      "equipmentType": "Multiple",
+      "payMin": "6000",
+      "payMax": "8000",
+      "payUnit": "Per Month",
+      "description": "Independent Contractor/Owner Operator Sprinter/Cargo Van for deliveries. 20-40 hours/week.",
+      "sourceUrl": "https://www.indeed.com/q-delivery-independent-contractor-l-utah-jobs.html",
+      "sourceName": "Indeed.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Bungii",
+      "state": "Utah",
+      "city": "Salt Lake City",
+      "equipmentType": "Box Truck",
+      "payMin": "",
+      "payMax": "",
+      "payUnit": "Per Week",
+      "description": "Partners with independent box truck drivers (non-CDL) for local and secure deliveries.",
+      "sourceUrl": "https://www.cbdriver.com/contract-box-truck-driver-non-cdl-69303-ad.aspx",
+      "sourceName": "CBDriver.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "KNIGHTS LOGISTICS LLC",
+      "state": "Maryland",
+      "city": "Baltimore",
+      "equipmentType": "Multiple",
+      "payMin": "100",
+      "payMax": "200",
+      "payUnit": "Per Day",
+      "description": "Independent contractor delivery drivers for last mile home delivery, liquor store, restaurant, hotel, and newspaper routes from warehouses in Jessup, Laurel, Halethorpe, Finksburg MD. Paid weekly.",
+      "sourceUrl": "https://www.cbdriver.com/independent-contractor-delivery-drivers-suv-minivan-cargo-van-67680-ad.aspx",
+      "sourceName": "CBDriver.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Capstone Logistics, LLC",
+      "state": "Maryland",
+      "city": "Jessup",
+      "equipmentType": "Sprinter",
+      "payMin": "1250",
+      "payMax": "1650",
+      "payUnit": "Per Week",
+      "description": "Independent Contractors (1099) for dedicated routes delivering to VA market, M-F 8am-5pm, no weekends, consistent freight. No CDL required.",
+      "sourceUrl": "https://www.indeed.com/q-1099-courier-l-maryland-jobs.html",
+      "sourceName": "Indeed.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Falcon Express Transportation, Inc",
+      "state": "Maryland",
+      "city": "Hyattsville",
+      "equipmentType": "Cargo Van",
+      "payMin": "200",
+      "payMax": "275",
+      "payUnit": "Per Day",
+      "description": "Cargo van owner operators for delivery routes with 5-day or 3-day schedule options, daily rates with upside potential.",
+      "sourceUrl": "https://www.indeed.com/q-1099-courier-l-maryland-jobs.html",
+      "sourceName": "Indeed.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "DeliverThat",
+      "state": "Iowa",
+      "city": "Davenport",
+      "equipmentType": "Car/SUV",
+      "payMin": "35",
+      "payMax": "35",
+      "payUnit": "Per Delivery",
+      "description": "1099 independent contractor for on-demand catering and route-based food deliveries to offices, commercial, and residential locations. Jobs take 30-40 minutes. Requires reliable vehicle, smartphone, two insulated catering bags.",
+      "sourceUrl": "https://couriergigs.com/jobs/419015332-independent-catering-delivery-driver",
+      "sourceName": "CourierGigs.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "US Pack Parts LLC",
+      "state": "Oregon",
+      "city": "Roseburg",
+      "equipmentType": "Car - Minivan or SUV",
+      "payMin": "",
+      "payMax": "",
+      "payUnit": "Per Week",
+      "description": "Independent contractor courier needed for one-way routes starting in Junction City Oregon, average 9.5 hours.",
+      "sourceUrl": "https://www.cbdriver.com/delivery-driver-independent-contractor-courier-needed-70050-ad.aspx",
+      "sourceName": "CBDriver.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Medical Delivery Services",
+      "state": "Oregon",
+      "city": "Portland",
+      "equipmentType": "",
+      "payMin": "",
+      "payMax": "",
+      "payUnit": "Per Week",
+      "description": "Contracting independent drivers (1099) for medical delivery routes using own vehicle.",
+      "sourceUrl": "https://couriergigs.com/jobs/319121304-delivery-driver-portland-or",
+      "sourceName": "CourierGigs.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Jusbero Group LLC",
+      "state": "Oregon",
+      "city": "Redmond",
+      "equipmentType": "Multiple",
+      "payMin": "",
+      "payMax": "",
+      "payUnit": "Per Week",
+      "description": "USPS delivery contractor for mail routes.",
+      "sourceUrl": "https://couriergigs.com/jobs/408450245-usps-delivery-contractor-redmond-or",
+      "sourceName": "CourierGigs.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Dash Courier & Logistics",
+      "state": "South Carolina",
+      "city": "North Charleston",
+      "equipmentType": "Multiple",
+      "payMin": "20000",
+      "payMax": "60000",
+      "payUnit": "per year",
+      "description": "Independent contractor for on-demand rush deliveries to medical facilities and other industries, occasional routed work, 24/7/365 operation.",
+      "sourceUrl": "https://couriergigs.com/jobs/434096429-courier-driver-independent-contractor-chs",
+      "sourceName": "CourierGigs.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Courier Express",
+      "state": "South Carolina",
+      "city": "North Charleston",
+      "equipmentType": "Multiple",
+      "payMin": "",
+      "payMax": "",
+      "payUnit": "Per Week",
+      "description": "Independent contractor delivery drivers for Mon-Fri last mile routes in North Charleston, Charleston, Summerville, Moncks Corner areas.",
+      "sourceUrl": "https://www.cbdriver.com/delivery-driver-own-cargo-transit-sprinter-van-70369-ad.aspx",
+      "sourceName": "CBDriver.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Phillips Trucking Service LLC",
+      "state": "South Carolina",
+      "city": "Columbia",
+      "equipmentType": "Multiple",
+      "payMin": "385",
+      "payMax": "385",
+      "payUnit": "Per Day",
+      "description": "Full time delivery routes for high top cargo van or small box truck owners, 1099, transport parts safely, M-F routes.",
+      "sourceUrl": "https://www.indeed.com/q-independent-contractor-courier-l-south-carolina-jobs.html",
+      "sourceName": "Indeed.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Spoke Logistics (AB)",
+      "state": "Vermont",
+      "city": "Brattleboro",
+      "equipmentType": "Sprinter van or Cargo van",
+      "payMin": "1300",
+      "payMax": "1425",
+      "payUnit": "Per Week",
+      "description": "Local 5 days/week routes for entrepreneur-minded drivers owning Sprinter van or Cargo van. 1099 position, Mon-Fri.",
+      "sourceUrl": "https://www.indeed.com/q-independent-contractor-l-vermont-jobs.html",
+      "sourceName": "Indeed.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Various Medical Equipment Providers",
+      "state": "Vermont",
+      "city": "Barre",
+      "equipmentType": "Sprinter or Cargo Van",
+      "payMin": "1300",
+      "payMax": "1300",
+      "payUnit": "Per Week",
+      "description": "Full-time delivery driver must own Sprinter or Cargo Van for medical equipment deliveries. Mileage reimbursement, referral program.",
+      "sourceUrl": "https://www.indeed.com/q-courier-l-vermont-jobs.html",
+      "sourceName": "Indeed.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Various Medical Equipment Providers",
+      "state": "Vermont",
+      "city": "South Burlington",
+      "equipmentType": "Full Size Cargo Van",
+      "payMin": "1300",
+      "payMax": "1357",
+      "payUnit": "Per Week",
+      "description": "Full-time delivery driver must own Full Size Cargo Van. Day shift, mileage reimbursement, paid training.",
+      "sourceUrl": "https://www.indeed.com/q-courier-l-vermont-jobs.html",
+      "sourceName": "Indeed.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Meadowlark Logistics",
+      "state": "North Dakota",
+      "city": "Bismarck",
+      "equipmentType": "Multiple",
+      "payMin": "140",
+      "payMax": "250",
+      "payUnit": "Per Day",
+      "description": "Independent contractor medical courier for deliveries and pickups in Bismarck-Mandan area and surrounding communities. Flexible contract work.",
+      "sourceUrl": "https://www.indeed.com/q-medical-courier-l-north-dakota-jobs.html",
+      "sourceName": "Indeed",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Express HR Hub / AEXP Express Corporation",
+      "state": "North Dakota",
+      "city": "Williston",
+      "equipmentType": "Cargo Van",
+      "payMin": "350",
+      "payMax": "350",
+      "payUnit": "Per Day",
+      "description": "1099 contractor for USPS mail delivery route, 27-mile route, 54 miles/day, 10 hours/day Mon-Sat, sorting and delivering mail/packages. Route starts 03/09/2026.",
+      "sourceUrl": "https://www.indeed.com/q-1099-contractor-l-williston,-nd-jobs.html",
+      "sourceName": "Indeed",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "CBDriver Listing",
+      "state": "North Dakota",
+      "city": "Bismarck",
+      "equipmentType": "Multiple",
+      "payMin": "Not specified",
+      "payMax": "Not specified",
+      "payUnit": "Per Week",
+      "description": "Independent contractor medical courier opportunity in Bismarck ND area to support medical logistics network.",
+      "sourceUrl": "https://www.cbdriver.com/medical-courier-independent-contractor-opportunity-bismarck-nd-68960-ad.aspx",
+      "sourceName": "CBDriver.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Delivery mexuru llc",
+      "state": "Wisconsin",
+      "city": "Caledonia / Racine area",
+      "equipmentType": "Car/SUV",
+      "payMin": "Not listed",
+      "payMax": "Not listed",
+      "payUnit": "Per Week",
+      "description": "1099 independent couriers with own vehicle to complete routes in Racine, Caledonia, Greenfield, South Milwaukee, Franklin.",
+      "sourceUrl": "https://www.indeed.com/q-independent-contractor-courier-l-milwaukee,-wi-jobs.html",
+      "sourceName": "Indeed",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Priority Dispatch Inc. / Diamond Expedited",
+      "state": "Wisconsin",
+      "city": "Milwaukee",
+      "equipmentType": "Multiple",
+      "payMin": "Not listed",
+      "payMax": "Not listed",
+      "payUnit": "Per Week",
+      "description": "Independent Contractor owner operator for route small package deliveries in Milwaukee area. Day shift.",
+      "sourceUrl": "https://www.indeed.com/q-independent-contractor-courier-l-milwaukee,-wi-jobs.html",
+      "sourceName": "Indeed",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Purple Mountain Solutions Inc.",
+      "state": "Wisconsin",
+      "city": "Milwaukee",
+      "equipmentType": "Car/SUV",
+      "payMin": "Not listed",
+      "payMax": "Not listed",
+      "payUnit": "Per Week",
+      "description": "Independent contractor courier driver using own vehicle. Routes 24/7 including on-call. Enrollment: https://icm.oforce.com/Account/Activate?code=9A056737-E5E3",
+      "sourceUrl": "https://www.indeed.com/q-independent-contractor-courier-l-milwaukee,-wi-jobs.html",
+      "sourceName": "Indeed",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Cargo Connect Services LLC",
+      "state": "Maine",
+      "city": "Livermore Falls",
+      "equipmentType": "Multiple",
+      "payMin": "200",
+      "payMax": "200",
+      "payUnit": "Per Day",
+      "description": "1099 contract delivery service mail route for USPS, sorting/loading/delivering mail/parcels on 31-mile round trip route, 6 hrs/day, 6 days/week.",
+      "sourceUrl": "https://www.indeed.com/q-independent-contractor-driver-l-maine-jobs.html",
+      "sourceName": "Indeed",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "J.B. Hunt",
+      "state": "Maine",
+      "city": "Portland",
+      "equipmentType": "26' box truck",
+      "payMin": "700",
+      "payMax": "700",
+      "payUnit": "Per Day",
+      "description": "Final mile home delivery and installation of appliances/furniture (white glove), consistent routes, Tue-Sat, for independent contractors with DOT/MC authority.",
+      "sourceUrl": "https://www.indeed.com/q-delivery-contractor-l-maine-jobs.html",
+      "sourceName": "Indeed",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "American Direct Courier LLC",
+      "state": "Maine",
+      "city": "Portland",
+      "equipmentType": "Cargo Van",
+      "payMin": "50",
+      "payMax": "50",
+      "payUnit": "per hour",
+      "description": "Final mile delivery and assembly independent contractor (white glove delivery).",
+      "sourceUrl": "https://couriergigs.com/jobs/in-saco-maine-united-states",
+      "sourceName": "CourierGigs.com",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "ADN Products LLC",
+      "state": "Rhode Island",
+      "city": "Warwick",
+      "equipmentType": "Car/SUV",
+      "payMin": "1000",
+      "payMax": "1300",
+      "payUnit": "Per Week",
+      "description": "1099 independent contractor position delivering small packages for local routes.",
+      "sourceUrl": "https://www.indeed.com/q-1099-driver-l-rhode-island-jobs.html",
+      "sourceName": "Indeed",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Airport Courier Service",
+      "state": "Rhode Island",
+      "city": "Providence",
+      "equipmentType": "Cargo Van - Car - Truck",
+      "payMin": "",
+      "payMax": "",
+      "payUnit": "Per Week",
+      "description": "Independent Contractor (Owner/Operator) for safe and timely delivery of goods across the northeast.",
+      "sourceUrl": "https://www.indeed.com/q-1099-driver-l-rhode-island-jobs.html",
+      "sourceName": "Indeed",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "General Logistics Carrier LLC",
+      "state": "Rhode Island",
+      "city": "Johnston",
+      "equipmentType": "Multiple",
+      "payMin": "8000",
+      "payMax": "12000",
+      "payUnit": "Per Month",
+      "description": "Independent Contractor/Owner Operator with own vehicle for deliveries.",
+      "sourceUrl": "https://www.indeed.com/q-1099-driver-l-rhode-island-jobs.html",
+      "sourceName": "Indeed",
+      "status": "New",
+      "verified": false
+    },
+    {
+      "companyName": "Rapid Medical",
+      "state": "Nebraska",
+      "city": "Omaha",
+      "equipmentType": "Multiple",
+      "payMin": "18",
+      "payMax": "24",
+      "payUnit": "per hour (comparable, net of fuel)",
+      "description": "Pickup and delivery of medical specimens and supplies along designated routes, averaging 9 hours/day and 550 miles. Use app for logging, professional service to healthcare facilities. 1099 independent contractor.",
+      "sourceUrl": "https://us-2.fountain.com/rapid-medical/apply/omaha-delivery-specialist",
+      "sourceName": "Rapid Medical Careers",
+      "status": "New",
+      "verified": false
     }
   ],
   "companies": [
@@ -2386,6 +2792,126 @@
       "website": "",
       "contactInfo": "",
       "notes": ""
+    },
+    {
+      "name": "General Logistics Carrier LLC",
+      "website": "",
+      "description": "Courier/delivery company operating in Utah"
+    },
+    {
+      "name": "Bungii",
+      "website": "",
+      "description": "Courier/delivery company operating in Utah"
+    },
+    {
+      "name": "KNIGHTS LOGISTICS LLC",
+      "website": "",
+      "description": "Courier/delivery company operating in Maryland"
+    },
+    {
+      "name": "Capstone Logistics, LLC",
+      "website": "",
+      "description": "Courier/delivery company operating in Maryland"
+    },
+    {
+      "name": "Falcon Express Transportation, Inc",
+      "website": "",
+      "description": "Courier/delivery company operating in Maryland"
+    },
+    {
+      "name": "DeliverThat",
+      "website": "",
+      "description": "Courier/delivery company operating in Iowa"
+    },
+    {
+      "name": "US Pack Parts LLC",
+      "website": "",
+      "description": "Courier/delivery company operating in Oregon"
+    },
+    {
+      "name": "Jusbero Group LLC",
+      "website": "",
+      "description": "Courier/delivery company operating in Oregon"
+    },
+    {
+      "name": "Dash Courier & Logistics",
+      "website": "",
+      "description": "Courier/delivery company operating in South Carolina"
+    },
+    {
+      "name": "Phillips Trucking Service LLC",
+      "website": "",
+      "description": "Courier/delivery company operating in South Carolina"
+    },
+    {
+      "name": "Spoke Logistics (AB)",
+      "website": "",
+      "description": "Courier/delivery company operating in Vermont"
+    },
+    {
+      "name": "Various Medical Equipment Providers",
+      "website": "",
+      "description": "Courier/delivery company operating in Vermont"
+    },
+    {
+      "name": "Meadowlark Logistics",
+      "website": "",
+      "description": "Courier/delivery company operating in North Dakota"
+    },
+    {
+      "name": "Express HR Hub / AEXP Express Corporation",
+      "website": "",
+      "description": "Courier/delivery company operating in North Dakota"
+    },
+    {
+      "name": "CBDriver Listing",
+      "website": "",
+      "description": "Courier/delivery company operating in North Dakota"
+    },
+    {
+      "name": "Delivery mexuru llc",
+      "website": "",
+      "description": "Courier/delivery company operating in Wisconsin"
+    },
+    {
+      "name": "Priority Dispatch Inc. / Diamond Expedited",
+      "website": "",
+      "description": "Courier/delivery company operating in Wisconsin"
+    },
+    {
+      "name": "Purple Mountain Solutions Inc.",
+      "website": "",
+      "description": "Courier/delivery company operating in Wisconsin"
+    },
+    {
+      "name": "Cargo Connect Services LLC",
+      "website": "",
+      "description": "Courier/delivery company operating in Maine"
+    },
+    {
+      "name": "J.B. Hunt",
+      "website": "",
+      "description": "Courier/delivery company operating in Maine"
+    },
+    {
+      "name": "American Direct Courier LLC",
+      "website": "",
+      "description": "Courier/delivery company operating in Maine"
+    },
+    {
+      "name": "ADN Products LLC",
+      "website": "",
+      "description": "Courier/delivery company operating in Rhode Island"
+    },
+    {
+      "name": "Airport Courier Service",
+      "website": "",
+      "description": "Courier/delivery company operating in Rhode Island"
+    },
+    {
+      "name": "Rapid Medical",
+      "website": "",
+      "description": "Courier/delivery company operating in Nebraska"
     }
   ]
 }
