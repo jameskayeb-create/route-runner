@@ -1,7 +1,7 @@
 #!/bin/sh
 set -e
 
-SEED_VERSION="3"
+SEED_VERSION="4"
 VERSION_FILE="$(dirname $DATABASE_PATH)/.seed-version"
 
 # Re-seed if database doesn't exist or seed version changed
