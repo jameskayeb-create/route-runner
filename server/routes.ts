@@ -58,24 +58,9 @@ export async function registerRoutes(server: Server, app: Express) {
   });
 
   // ======= AUTH =======
-  app.post("/api/auth/register", (req, res) => {
-    try {
-      const data = registerSchema.parse(req.body);
-      const existing = storage.getUserByEmail(data.email);
-      if (existing) {
-        return res.status(400).json({ error: "Email already registered" });
-      }
-      const user = storage.createUser({
-        ...data,
-        password: hashPassword(data.password),
-        role: "member",
-      });
-      const token = generateToken();
-      sessions.set(token, { userId: user.id, role: user.role });
-      res.json({ token, user: { id: user.id, name: user.name, email: user.email, role: user.role } });
-    } catch (err: any) {
-      res.status(400).json({ error: err.message || "Invalid input" });
-    }
+  // Public registration disabled — accounts created via Shopify webhook only
+  app.post("/api/auth/register", (_req, res) => {
+    res.status(403).json({ error: "Registration is disabled. Purchase a subscription at sixfigurecouriers.com to get access." });
   });
 
   app.post("/api/auth/login", (req, res) => {

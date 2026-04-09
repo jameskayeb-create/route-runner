@@ -8,18 +8,13 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Truck, MapPin, DollarSign, Shield } from "lucide-react";
 
 export default function AuthPage() {
-  const { login, register } = useAuth();
+  const { login } = useAuth();
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   // Login form
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
-
-  // Register form
-  const [regName, setRegName] = useState("");
-  const [regEmail, setRegEmail] = useState("");
-  const [regPassword, setRegPassword] = useState("");
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,19 +24,6 @@ export default function AuthPage() {
       await login(loginEmail, loginPassword);
     } catch (err: any) {
       setError(err.message || "Login failed");
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  const handleRegister = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-    setLoading(true);
-    try {
-      await register(regName, regEmail, regPassword);
-    } catch (err: any) {
-      setError(err.message || "Registration failed");
     } finally {
       setLoading(false);
     }
@@ -106,105 +88,47 @@ export default function AuthPage() {
             </p>
           </div>
 
-          <Tabs defaultValue="login" className="w-full">
-            <TabsList className="grid w-full grid-cols-2 mb-6">
-              <TabsTrigger value="login" data-testid="tab-login">Sign In</TabsTrigger>
-              <TabsTrigger value="register" data-testid="tab-register">Create Account</TabsTrigger>
-            </TabsList>
-
-            <TabsContent value="login">
-              <Card>
-                <CardHeader className="pb-4">
-                  <h2 className="text-lg font-semibold">Welcome back</h2>
-                  <p className="text-sm text-muted-foreground">Sign in to access your routes</p>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleLogin} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="login-email">Email</Label>
-                      <Input
-                        id="login-email"
-                        type="email"
-                        value={loginEmail}
-                        onChange={(e) => setLoginEmail(e.target.value)}
-                        placeholder="you@example.com"
-                        required
-                        data-testid="input-login-email"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="login-password">Password</Label>
-                      <Input
-                        id="login-password"
-                        type="password"
-                        value={loginPassword}
-                        onChange={(e) => setLoginPassword(e.target.value)}
-                        placeholder="Min 6 characters"
-                        required
-                        data-testid="input-login-password"
-                      />
-                    </div>
-                    {error && <p className="text-sm text-destructive">{error}</p>}
-                    <Button type="submit" className="w-full" disabled={loading} data-testid="button-login">
-                      {loading ? "Signing in..." : "Sign In"}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </TabsContent>
-
-            <TabsContent value="register">
-              <Card>
-                <CardHeader className="pb-4">
-                  <h2 className="text-lg font-semibold">Get started</h2>
-                  <p className="text-sm text-muted-foreground">Create your Route Runner account</p>
-                </CardHeader>
-                <CardContent>
-                  <form onSubmit={handleRegister} className="space-y-4">
-                    <div className="space-y-2">
-                      <Label htmlFor="reg-name">Full Name</Label>
-                      <Input
-                        id="reg-name"
-                        value={regName}
-                        onChange={(e) => setRegName(e.target.value)}
-                        placeholder="Your name"
-                        required
-                        data-testid="input-reg-name"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="reg-email">Email</Label>
-                      <Input
-                        id="reg-email"
-                        type="email"
-                        value={regEmail}
-                        onChange={(e) => setRegEmail(e.target.value)}
-                        placeholder="you@example.com"
-                        required
-                        data-testid="input-reg-email"
-                      />
-                    </div>
-                    <div className="space-y-2">
-                      <Label htmlFor="reg-password">Password</Label>
-                      <Input
-                        id="reg-password"
-                        type="password"
-                        value={regPassword}
-                        onChange={(e) => setRegPassword(e.target.value)}
-                        placeholder="Min 6 characters"
-                        required
-                        data-testid="input-reg-password"
-                      />
-                    </div>
-                    {error && <p className="text-sm text-destructive">{error}</p>}
-                    <Button type="submit" className="w-full" disabled={loading} data-testid="button-register">
-                      {loading ? "Creating account..." : "Create Account"}
-                    </Button>
-                  </form>
-                </CardContent>
-              </Card>
-            </TabsContent>
-          </Tabs>
+          <Card>
+            <CardHeader className="pb-4">
+              <h2 className="text-lg font-semibold">Welcome back</h2>
+              <p className="text-sm text-muted-foreground">Sign in to access your routes</p>
+            </CardHeader>
+            <CardContent>
+              <form onSubmit={handleLogin} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="login-email">Email</Label>
+                  <Input
+                    id="login-email"
+                    type="email"
+                    value={loginEmail}
+                    onChange={(e) => setLoginEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                    data-testid="input-login-email"
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="login-password">Password</Label>
+                  <Input
+                    id="login-password"
+                    type="password"
+                    value={loginPassword}
+                    onChange={(e) => setLoginPassword(e.target.value)}
+                    placeholder="Min 6 characters"
+                    required
+                    data-testid="input-login-password"
+                  />
+                </div>
+                {error && <p className="text-sm text-destructive">{error}</p>}
+                <Button type="submit" className="w-full" disabled={loading} data-testid="button-login">
+                  {loading ? "Signing in..." : "Sign In"}
+                </Button>
+              </form>
+              <p className="text-xs text-muted-foreground text-center mt-4">
+                Don't have an account? <a href="https://www.sixfigurecouriers.com" className="text-primary hover:underline">Subscribe here</a>
+              </p>
+            </CardContent>
+          </Card>
         </div>
       </div>
     </div>
