@@ -117,7 +117,14 @@ export default function Dashboard() {
           </div>
           
           <div className="flex items-center gap-3">
-            <span className="text-xs text-muted-foreground hidden sm:block">{user?.name}</span>
+            <span className="text-xs text-muted-foreground hidden sm:block">{user?.name}{user?.role === "admin" ? " (Admin)" : ""}</span>
+            {user?.role === "admin" && (
+              <a href="/#/admin">
+                <Button variant="outline" size="sm" data-testid="button-admin">
+                  Admin
+                </Button>
+              </a>
+            )}
             <Button variant="ghost" size="sm" onClick={logout} data-testid="button-logout">
               Sign Out
             </Button>

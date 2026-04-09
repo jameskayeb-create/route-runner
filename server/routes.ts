@@ -148,6 +148,22 @@ export async function registerRoutes(server: Server, app: Express) {
     res.json({ ok: true });
   });
 
+  // ======= ADMIN: LIST MEMBERS =======
+  app.get("/api/admin/members", authMiddleware, adminMiddleware, (_req: any, res) => {
+    const members = storage.getAllMembers().map((u: any) => ({
+      id: u.id, email: u.email, name: u.name, role: u.role, createdAt: u.createdAt
+    }));
+    res.json(members);
+  });
+
+  // ======= ADMIN: DELETE MEMBER =======
+  app.delete("/api/admin/members/:id", authMiddleware, adminMiddleware, (req: any, res) => {
+    const id = Number(req.params.id);
+    if (id === req.session.userId) return res.status(400).json({ error: "Cannot delete yourself" });
+    storage.deleteUser(id);
+    res.json({ ok: true });
+  });
+
   // ======= ADMIN: CREATE MEMBER =======
   app.post("/api/admin/create-member", authMiddleware, adminMiddleware, async (req: any, res) => {
     try {

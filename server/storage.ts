@@ -63,6 +63,8 @@ export interface IStorage {
   getUserByEmail(email: string): User | undefined;
   getUserById(id: number): User | undefined;
   createUser(user: InsertUser): User;
+  getAllMembers(): User[];
+  deleteUser(id: number): void;
 
   // Routes
   getRoutes(filters?: RouteFilters): Route[];
@@ -119,6 +121,14 @@ export class DatabaseStorage implements IStorage {
   createUser(user: InsertUser): User {
     const now = new Date().toISOString();
     return db.insert(users).values({ ...user, createdAt: now }).returning().get();
+  }
+
+  getAllMembers(): User[] {
+    return db.select().from(users).all();
+  }
+
+  deleteUser(id: number): void {
+    db.delete(users).where(eq(users.id, id)).run();
   }
 
   getRoutes(filters?: RouteFilters): Route[] {
