@@ -3,6 +3,19 @@ import type { Server } from "http";
 import { storage } from "./storage";
 import { loginSchema, registerSchema, insertRouteSchema } from "@shared/schema";
 import * as crypto from "crypto";
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+function shopifyLog(message: string) {
+  const formattedTime = new Date().toLocaleTimeString("en-US", {
+    hour: "numeric",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
+  });
+  console.log(`${formattedTime} [shopify] ${message}`);
+}
 
 function hashPassword(password: string): string {
   return crypto.createHash("sha256").update(password).digest("hex");
@@ -148,4 +161,197 @@ export async function registerRoutes(server: Server, app: Express) {
     const companies = storage.getCompanies();
     res.json(companies);
   });
+
+  // ======= SHOPIFY WEBHOOK =======
+  app.post("/api/shopify/webhook", async (req, res) => {
+    try {
+      const rawBody = Buffer.isBuffer(req.body) ? req.body : Buffer.from(String(req.body));
+
+      // HMAC verification in production
+      if (process.env.NODE_ENV === "production") {
+        const hmacHeader = req.headers["x-shopify-hmac-sha256"] as string;
+        if (!hmacHeader || !process.env.SHOPIFY_WEBHOOK_SECRET) {
+          shopifyLog("missing HMAC header or secret");
+          return res.status(401).json({ error: "Unauthorized" });
+        }
+        const computed = crypto
+          .createHmac("sha256", process.env.SHOPIFY_WEBHOOK_SECRET)
+          .update(rawBody)
+          .digest("base64");
+        const computedBuf = Buffer.from(computed);
+        const headerBuf = Buffer.from(hmacHeader);
+        if (computedBuf.length !== headerBuf.length || !crypto.timingSafeEqual(computedBuf, headerBuf)) {
+          shopifyLog("HMAC mismatch");
+          return res.status(401).json({ error: "Unauthorized" });
+        }
+      }
+
+      const order = JSON.parse(rawBody.toString());
+      const topic = req.headers["x-shopify-topic"] as string;
+      shopifyLog(`webhook received: ${topic}`);
+
+      if (topic === "orders/create") {
+        const lineItems: any[] = order.line_items || [];
+        const hasRouteRunner = lineItems.some(
+          (item: any) => item.title && item.title.toLowerCase().includes("route runner")
+        );
+
+        if (hasRouteRunner) {
+          const customerEmail = order.customer?.email || order.email;
+          const customerName =
+            [order.customer?.first_name, order.customer?.last_name].filter(Boolean).join(" ") ||
+            order.customer?.email ||
+            "Member";
+
+          if (!customerEmail) {
+            shopifyLog("no customer email found");
+            return res.status(200).json({ ok: true, skipped: "no email" });
+          }
+
+          const existing = storage.getUserByEmail(customerEmail);
+          if (existing) {
+            shopifyLog(`user ${customerEmail} already exists, sending notice`);
+            try {
+              await resend.emails.send({
+                from: "Route Runner <noreply@sixfigurecouriers.com>",
+                to: customerEmail,
+                subject: "Route Runner — You Already Have Access",
+                html: `
+                  <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a1a; color: #fff; padding: 40px; border-radius: 8px;">
+                    <h1 style="color: #D4A017; margin-bottom: 4px;">Route Runner</h1>
+                    <p style="color: #888; margin-top: 0;">by Six Figure Courier</p>
+                    <hr style="border-color: #333; margin: 24px 0;" />
+                    <p>Hey ${customerName},</p>
+                    <p>You already have an active Route Runner account. Log in with your existing credentials:</p>
+                    <div style="background: #2a2a2a; border: 1px solid #333; border-radius: 6px; padding: 20px; margin: 24px 0;">
+                      <p style="margin: 4px 0;"><strong style="color: #D4A017;">Login URL:</strong> <a href="${process.env.APP_URL || "https://routes.sixfigurecouriers.com"}" style="color: #D4A017;">${process.env.APP_URL || "https://routes.sixfigurecouriers.com"}</a></p>
+                      <p style="margin: 4px 0;"><strong style="color: #D4A017;">Email:</strong> ${customerEmail}</p>
+                    </div>
+                    <p style="color: #888; font-size: 14px;">If you forgot your password, reply to this email and we'll help you reset it.</p>
+                    <p>— The Six Figure Courier Team</p>
+                  </div>
+                `,
+              });
+            } catch (emailErr) {
+              shopifyLog(`failed to send existing-user email: ${emailErr}`);
+            }
+            return res.status(200).json({ ok: true, existing: true });
+          }
+
+          // Create new user
+          const password = crypto.randomBytes(6).toString("hex");
+          const hashedPassword = hashPassword(password);
+
+          const user = storage.createUser({
+            email: customerEmail,
+            password: hashedPassword,
+            name: customerName,
+            role: "member",
+          });
+          shopifyLog(`created user ${user.email} (id=${user.id})`);
+
+          // Send welcome email
+          try {
+            await resend.emails.send({
+              from: "Route Runner <noreply@sixfigurecouriers.com>",
+              to: customerEmail,
+              subject: "Welcome to Route Runner — Your Login Details",
+              html: `
+                <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a1a; color: #fff; padding: 40px; border-radius: 8px;">
+                  <h1 style="color: #D4A017; margin-bottom: 4px;">Route Runner</h1>
+                  <p style="color: #888; margin-top: 0;">by Six Figure Courier</p>
+                  <hr style="border-color: #333; margin: 24px 0;" />
+                  <p>Hey ${customerName},</p>
+                  <p>Your Route Runner membership is active. Here are your login details:</p>
+                  <div style="background: #2a2a2a; border: 1px solid #333; border-radius: 6px; padding: 20px; margin: 24px 0;">
+                    <p style="margin: 4px 0;"><strong style="color: #D4A017;">Login URL:</strong> <a href="${process.env.APP_URL || "https://routes.sixfigurecouriers.com"}" style="color: #D4A017;">${process.env.APP_URL || "https://routes.sixfigurecouriers.com"}</a></p>
+                    <p style="margin: 4px 0;"><strong style="color: #D4A017;">Email:</strong> ${customerEmail}</p>
+                    <p style="margin: 4px 0;"><strong style="color: #D4A017;">Password:</strong> ${password}</p>
+                  </div>
+                  <p style="color: #888; font-size: 14px;">You can change your password after logging in. If you have any issues, reply to this email.</p>
+                  <p>— The Six Figure Courier Team</p>
+                </div>
+              `,
+            });
+            shopifyLog(`welcome email sent to ${customerEmail}`);
+          } catch (emailErr) {
+            shopifyLog(`failed to send welcome email: ${emailErr}`);
+          }
+
+          return res.status(200).json({ ok: true, created: true });
+        }
+
+        shopifyLog("order has no Route Runner line items, skipping");
+      } else if (topic === "orders/cancelled") {
+        shopifyLog(`order cancelled — ${JSON.stringify(order.name || order.id)}`);
+      } else if (topic === "app/uninstalled") {
+        shopifyLog("app uninstalled");
+      } else {
+        shopifyLog(`unhandled topic ${topic}`);
+      }
+
+      return res.status(200).json({ ok: true });
+    } catch (err) {
+      shopifyLog(`error: ${err}`);
+      return res.status(200).json({ ok: true });
+    }
+  });
+
+  // ======= SHOPIFY TEST WEBHOOK (dev only) =======
+  if (process.env.NODE_ENV !== "production") {
+    app.post("/api/shopify/test-webhook", async (req, res) => {
+      try {
+        const { email, name } = req.body;
+        if (!email || !name) {
+          return res.status(400).json({ error: "email and name are required" });
+        }
+
+        const existing = storage.getUserByEmail(email);
+        if (existing) {
+          return res.status(400).json({ error: "User already exists", email });
+        }
+
+        const password = crypto.randomBytes(6).toString("hex");
+        const hashedPassword = hashPassword(password);
+
+        const user = storage.createUser({
+          email,
+          password: hashedPassword,
+          name,
+          role: "member",
+        });
+
+        // Send welcome email via Resend
+        try {
+          await resend.emails.send({
+            from: "Route Runner <noreply@sixfigurecouriers.com>",
+            to: email,
+            subject: "Welcome to Route Runner — Your Login Details",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a1a; color: #fff; padding: 40px; border-radius: 8px;">
+                <h1 style="color: #D4A017; margin-bottom: 4px;">Route Runner</h1>
+                <p style="color: #888; margin-top: 0;">by Six Figure Courier</p>
+                <hr style="border-color: #333; margin: 24px 0;" />
+                <p>Hey ${name},</p>
+                <p>Your Route Runner membership is active. Here are your login details:</p>
+                <div style="background: #2a2a2a; border: 1px solid #333; border-radius: 6px; padding: 20px; margin: 24px 0;">
+                  <p style="margin: 4px 0;"><strong style="color: #D4A017;">Login URL:</strong> <a href="${process.env.APP_URL || "https://routes.sixfigurecouriers.com"}" style="color: #D4A017;">${process.env.APP_URL || "https://routes.sixfigurecouriers.com"}</a></p>
+                  <p style="margin: 4px 0;"><strong style="color: #D4A017;">Email:</strong> ${email}</p>
+                  <p style="margin: 4px 0;"><strong style="color: #D4A017;">Password:</strong> ${password}</p>
+                </div>
+                <p style="color: #888; font-size: 14px;">You can change your password after logging in. If you have any issues, reply to this email.</p>
+                <p>— The Six Figure Courier Team</p>
+              </div>
+            `,
+          });
+        } catch (emailErr) {
+          shopifyLog(`test webhook: failed to send email: ${emailErr}`);
+        }
+
+        res.json({ success: true, email, password, userId: user.id });
+      } catch (err: any) {
+        res.status(500).json({ error: err.message || "Internal error" });
+      }
+    });
+  }
 }

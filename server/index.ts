@@ -12,6 +12,9 @@ declare module "http" {
   }
 }
 
+// Shopify webhook needs raw body for HMAC verification — must be before express.json()
+app.use('/api/shopify/webhook', express.raw({ type: 'application/json' }));
+
 app.use(
   express.json({
     verify: (req, _res, buf) => {
