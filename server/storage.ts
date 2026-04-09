@@ -65,6 +65,7 @@ export interface IStorage {
   createUser(user: InsertUser): User;
   getAllMembers(): User[];
   deleteUser(id: number): void;
+  updatePassword(id: number, hashedPassword: string): void;
 
   // Routes
   getRoutes(filters?: RouteFilters): Route[];
@@ -129,6 +130,10 @@ export class DatabaseStorage implements IStorage {
 
   deleteUser(id: number): void {
     db.delete(users).where(eq(users.id, id)).run();
+  }
+
+  updatePassword(id: number, hashedPassword: string): void {
+    db.update(users).set({ password: hashedPassword }).where(eq(users.id, id)).run();
   }
 
   getRoutes(filters?: RouteFilters): Route[] {

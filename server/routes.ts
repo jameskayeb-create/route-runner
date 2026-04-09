@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import type { Server } from "http";
-import { storage, db } from "./storage";
+import { storage } from "./storage";
 import { loginSchema, registerSchema, insertRouteSchema } from "@shared/schema";
 import * as crypto from "crypto";
 import { Resend } from "resend";
@@ -104,7 +104,7 @@ export async function registerRoutes(server: Server, app: Express) {
       if (currentHash !== user.password) return res.status(400).json({ error: "Current password is incorrect" });
 
       const newHash = crypto.createHash("sha256").update(newPassword).digest("hex");
-      db.prepare("UPDATE users SET password = ? WHERE id = ?").run(newHash, user.id);
+      storage.updatePassword(user.id, newHash);
 
       res.json({ ok: true });
     } catch (err: any) {
