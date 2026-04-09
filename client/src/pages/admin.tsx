@@ -49,9 +49,9 @@ export default function AdminPage() {
 
   // Fetch route stats
   const { data: stats } = useQuery<{ totalRoutes: number; statesCovered: number; avgWeeklyPay: number }>({
-    queryKey: ["/api/stats"],
+    queryKey: ["/api/routes/stats"],
     queryFn: async () => {
-      const res = await apiRequest("GET", "/api/stats", undefined, token!);
+      const res = await apiRequest("GET", "/api/routes/stats", undefined, token!);
       return res.json();
     },
     enabled: !!token,
