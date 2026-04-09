@@ -19,18 +19,40 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType | null>(null);
 
-// In-memory token storage (no localStorage in sandboxed iframes)
-let memoryToken: string | null = null;
+// Persist session in localStorage
+function saveSession(token: string, user: AuthUser) {
+  try {
+    localStorage.setItem("rr_token", token);
+    localStorage.setItem("rr_user", JSON.stringify(user));
+  } catch {}
+}
+
+function loadSession(): { token: string; user: AuthUser } | null {
+  try {
+    const token = localStorage.getItem("rr_token");
+    const userStr = localStorage.getItem("rr_user");
+    if (token && userStr) return { token, user: JSON.parse(userStr) };
+  } catch {}
+  return null;
+}
+
+function clearSession() {
+  try {
+    localStorage.removeItem("rr_token");
+    localStorage.removeItem("rr_user");
+  } catch {}
+}
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<AuthUser | null>(null);
-  const [token, setToken] = useState<string | null>(null);
+  const saved = loadSession();
+  const [user, setUser] = useState<AuthUser | null>(saved?.user ?? null);
+  const [token, setToken] = useState<string | null>(saved?.token ?? null);
   const [isLoading, setIsLoading] = useState(false);
 
   const setAuth = useCallback((t: string, u: AuthUser) => {
-    memoryToken = t;
     setToken(t);
     setUser(u);
+    saveSession(t, u);
   }, []);
 
   const login = useCallback(async (email: string, password: string) => {
@@ -48,13 +70,13 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, [setAuth]);
 
   const logout = useCallback(() => {
-    if (memoryToken) {
-      apiRequest("POST", "/api/auth/logout", undefined, memoryToken).catch(() => {});
+    if (token) {
+      apiRequest("POST", "/api/auth/logout", undefined, token).catch(() => {});
     }
-    memoryToken = null;
     setToken(null);
     setUser(null);
-  }, []);
+    clearSession();
+  }, [token]);
 
   return (
     <AuthContext.Provider value={{ user, token, isLoading, login, register, logout }}>
