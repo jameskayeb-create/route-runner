@@ -148,6 +148,104 @@ export async function registerRoutes(server: Server, app: Express) {
     res.json({ ok: true });
   });
 
+  // ======= ADMIN: CREATE MEMBER =======
+  app.post("/api/admin/create-member", authMiddleware, adminMiddleware, async (req: any, res) => {
+    try {
+      const { email, name } = req.body;
+      if (!email) return res.status(400).json({ error: "Email is required" });
+
+      const existing = storage.getUserByEmail(email);
+      if (existing) return res.status(400).json({ error: "User already exists" });
+
+      const password = crypto.randomBytes(6).toString("hex");
+      const hashed = crypto.createHash("sha256").update(password).digest("hex");
+      const user = storage.createUser({ email, name: name || email.split("@")[0], password: hashed, role: "member" });
+
+      // Send welcome email
+      try {
+        await getResend().emails.send({
+          from: "Route Runner <noreply@sixfigurecouriers.com>",
+          to: email,
+          subject: "Welcome to Route Runner — Your Login Details",
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a1a; color: #fff; padding: 40px; border-radius: 8px;">
+              <h1 style="color: #D4A017; margin-bottom: 4px;">Route Runner</h1>
+              <p style="color: #888; margin-top: 0;">by Six Figure Courier</p>
+              <hr style="border-color: #333; margin: 24px 0;" />
+              <p>Hey ${name || "there"},</p>
+              <p>Your Route Runner membership is active. Here are your login details:</p>
+              <div style="background: #2a2a2a; border: 1px solid #333; border-radius: 6px; padding: 20px; margin: 24px 0;">
+                <p style="margin: 4px 0;"><strong style="color: #D4A017;">Login URL:</strong> <a href="${process.env.APP_URL || 'https://routes.sixfigurecouriers.com'}" style="color: #D4A017;">${process.env.APP_URL || 'https://routes.sixfigurecouriers.com'}</a></p>
+                <p style="margin: 4px 0;"><strong style="color: #D4A017;">Email:</strong> ${email}</p>
+                <p style="margin: 4px 0;"><strong style="color: #D4A017;">Password:</strong> ${password}</p>
+              </div>
+              <p style="color: #888; font-size: 14px;">If you have any issues, reply to this email.</p>
+              <p>— The Six Figure Courier Team</p>
+            </div>
+          `
+        });
+      } catch (emailErr: any) {
+        shopifyLog(`Warning: account created but email failed for ${email}: ${emailErr.message}`);
+      }
+
+      res.json({ success: true, user: { id: user.id, email: user.email, name: user.name }, password });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  // ======= ADMIN: BULK CREATE MEMBERS =======
+  app.post("/api/admin/bulk-create-members", authMiddleware, adminMiddleware, async (req: any, res) => {
+    try {
+      const { members } = req.body; // Array of { email, name }
+      if (!Array.isArray(members) || members.length === 0) {
+        return res.status(400).json({ error: "Provide an array of { email, name } objects" });
+      }
+
+      const results: any[] = [];
+      for (const { email, name } of members) {
+        if (!email) { results.push({ email, success: false, error: "No email" }); continue; }
+        const existing = storage.getUserByEmail(email);
+        if (existing) { results.push({ email, success: false, error: "Already exists" }); continue; }
+
+        const password = crypto.randomBytes(6).toString("hex");
+        const hashed = crypto.createHash("sha256").update(password).digest("hex");
+        storage.createUser({ email, name: name || email.split("@")[0], password: hashed, role: "member" });
+
+        try {
+          await getResend().emails.send({
+            from: "Route Runner <noreply@sixfigurecouriers.com>",
+            to: email,
+            subject: "Welcome to Route Runner — Your Login Details",
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a1a; color: #fff; padding: 40px; border-radius: 8px;">
+                <h1 style="color: #D4A017; margin-bottom: 4px;">Route Runner</h1>
+                <p style="color: #888; margin-top: 0;">by Six Figure Courier</p>
+                <hr style="border-color: #333; margin: 24px 0;" />
+                <p>Hey ${name || "there"},</p>
+                <p>Your Route Runner membership is active. Here are your login details:</p>
+                <div style="background: #2a2a2a; border: 1px solid #333; border-radius: 6px; padding: 20px; margin: 24px 0;">
+                  <p style="margin: 4px 0;"><strong style="color: #D4A017;">Login URL:</strong> <a href="${process.env.APP_URL || 'https://routes.sixfigurecouriers.com'}" style="color: #D4A017;">${process.env.APP_URL || 'https://routes.sixfigurecouriers.com'}</a></p>
+                  <p style="margin: 4px 0;"><strong style="color: #D4A017;">Email:</strong> ${email}</p>
+                  <p style="margin: 4px 0;"><strong style="color: #D4A017;">Password:</strong> ${password}</p>
+                </div>
+                <p style="color: #888; font-size: 14px;">If you have any issues, reply to this email.</p>
+                <p>— The Six Figure Courier Team</p>
+              </div>
+            `
+          });
+          results.push({ email, success: true });
+        } catch {
+          results.push({ email, success: true, warning: "Account created but email failed" });
+        }
+      }
+
+      res.json({ results, created: results.filter(r => r.success).length, failed: results.filter(r => !r.success).length });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   // ======= COMPANIES =======
   app.get("/api/companies", authMiddleware, (_req, res) => {
     const companies = storage.getCompanies();
