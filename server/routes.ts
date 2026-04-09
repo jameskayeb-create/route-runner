@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import type { Server } from "http";
-import { storage } from "./storage";
+import { storage, db } from "./storage";
 import { loginSchema, registerSchema, insertRouteSchema } from "@shared/schema";
 import * as crypto from "crypto";
 import { Resend } from "resend";
@@ -88,6 +88,28 @@ export async function registerRoutes(server: Server, app: Express) {
     const user = storage.getUserById(req.session.userId);
     if (!user) return res.status(404).json({ error: "User not found" });
     res.json({ id: user.id, name: user.name, email: user.email, role: user.role });
+  });
+
+  // ======= CHANGE PASSWORD =======
+  app.post("/api/auth/change-password", authMiddleware, (req: any, res) => {
+    try {
+      const { currentPassword, newPassword } = req.body;
+      if (!currentPassword || !newPassword) return res.status(400).json({ error: "Both current and new password required" });
+      if (newPassword.length < 6) return res.status(400).json({ error: "New password must be at least 6 characters" });
+
+      const user = storage.getUserById(req.session.userId);
+      if (!user) return res.status(404).json({ error: "User not found" });
+
+      const currentHash = crypto.createHash("sha256").update(currentPassword).digest("hex");
+      if (currentHash !== user.password) return res.status(400).json({ error: "Current password is incorrect" });
+
+      const newHash = crypto.createHash("sha256").update(newPassword).digest("hex");
+      db.prepare("UPDATE users SET password = ? WHERE id = ?").run(newHash, user.id);
+
+      res.json({ ok: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
   // ======= ROUTES (Public stats, auth required for details) =======

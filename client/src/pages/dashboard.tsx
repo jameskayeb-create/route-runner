@@ -6,11 +6,13 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
+import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Skeleton } from "@/components/ui/skeleton";
+import { useToast } from "@/hooks/use-toast";
 import {
   Search, MapPin, Truck, DollarSign, TrendingUp, ExternalLink,
-  ChevronLeft, ChevronRight, SlidersHorizontal, X, Sparkles, Building2
+  ChevronLeft, ChevronRight, SlidersHorizontal, X, Sparkles, Building2, KeyRound
 } from "lucide-react";
 import type { Route } from "@shared/schema";
 
@@ -49,6 +51,7 @@ function equipmentColor(cat: string): string {
 
 export default function Dashboard() {
   const { token, user, logout } = useAuth();
+  const { toast } = useToast();
   const [search, setSearch] = useState("");
   const [stateFilter, setStateFilter] = useState<string>("");
   const [equipFilter, setEquipFilter] = useState<string>("");
@@ -58,6 +61,30 @@ export default function Dashboard() {
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const PAGE_SIZE = 25;
+
+  // Change password
+  const [showPasswordForm, setShowPasswordForm] = useState(false);
+  const [currentPw, setCurrentPw] = useState("");
+  const [newPw, setNewPw] = useState("");
+  const [pwLoading, setPwLoading] = useState(false);
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setPwLoading(true);
+    try {
+      const res = await apiRequest("POST", "/api/auth/change-password", { currentPassword: currentPw, newPassword: newPw }, token!);
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      toast({ title: "Password changed successfully" });
+      setShowPasswordForm(false);
+      setCurrentPw("");
+      setNewPw("");
+    } catch (err: any) {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
+    } finally {
+      setPwLoading(false);
+    }
+  };
 
   const queryParams = useMemo(() => {
     const p = new URLSearchParams();
@@ -118,6 +145,9 @@ export default function Dashboard() {
           
           <div className="flex items-center gap-3">
             <span className="text-xs text-muted-foreground hidden sm:block">{user?.name}{user?.role === "admin" ? " (Admin)" : ""}</span>
+            <Button variant="ghost" size="sm" onClick={() => setShowPasswordForm(!showPasswordForm)} data-testid="button-change-password">
+              <KeyRound className="w-3.5 h-3.5" />
+            </Button>
             {user?.role === "admin" && (
               <a href="/#/admin">
                 <Button variant="outline" size="sm" data-testid="button-admin">
@@ -129,6 +159,31 @@ export default function Dashboard() {
               Sign Out
             </Button>
           </div>
+
+          {/* Change password dropdown */}
+          {showPasswordForm && (
+            <div className="absolute right-4 top-16 z-50 w-80 bg-card border border-border rounded-lg shadow-lg p-4 space-y-3">
+              <h3 className="text-sm font-semibold">Change Password</h3>
+              <form onSubmit={handleChangePassword} className="space-y-3">
+                <div className="space-y-1">
+                  <Label className="text-xs">Current Password</Label>
+                  <Input type="password" value={currentPw} onChange={(e) => setCurrentPw(e.target.value)} required data-testid="input-current-password" />
+                </div>
+                <div className="space-y-1">
+                  <Label className="text-xs">New Password</Label>
+                  <Input type="password" value={newPw} onChange={(e) => setNewPw(e.target.value)} required minLength={6} placeholder="Min 6 characters" data-testid="input-new-password" />
+                </div>
+                <div className="flex gap-2">
+                  <Button type="submit" size="sm" disabled={pwLoading} data-testid="button-save-password">
+                    {pwLoading ? "Saving..." : "Save"}
+                  </Button>
+                  <Button type="button" variant="ghost" size="sm" onClick={() => { setShowPasswordForm(false); setCurrentPw(""); setNewPw(""); }}>
+                    Cancel
+                  </Button>
+                </div>
+              </form>
+            </div>
+          )}
         </div>
       </header>
 
