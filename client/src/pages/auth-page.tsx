@@ -75,7 +75,7 @@ export default function AuthPage() {
 
             <div className="pt-2 border-t border-border/40">
               <p className="text-xs text-muted-foreground">
-                91+ active routes across 36 states. New listings added every Monday & Thursday.
+                New listings added every Monday &amp; Thursday.
               </p>
             </div>
           </div>
@@ -124,13 +124,13 @@ export default function AuthPage() {
                     <div>
                       <h2 className="font-semibold text-primary">Not a member yet?</h2>
                       <p className="text-sm text-muted-foreground mt-1">
-                        Get unlimited access to 91+ courier and IC routes across 36 states for just <strong className="text-foreground">$19/month</strong>.
+                        Get unlimited access to open courier and independent contractor routes across all 50 states for just <strong className="text-foreground">$19/month</strong>.
                       </p>
                     </div>
                     <ul className="text-xs text-muted-foreground space-y-1">
                       <li>✓ Direct links to every active listing</li>
-                      <li>✓ Filter by state, vehicle type & pay</li>
-                      <li>✓ New routes added Mon &amp; Thu automatically</li>
+                      <li>✓ Filter by state, vehicle type &amp; pay</li>
+                      <li>✓ New routes added every week automatically</li>
                     </ul>
                     <a href={PURCHASE_URL} target="_blank" rel="noopener noreferrer" className="block">
                       <Button className="w-full bg-primary hover:bg-primary/90" data-testid="button-subscribe">
