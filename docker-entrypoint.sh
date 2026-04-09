@@ -1,13 +1,18 @@
 #!/bin/sh
 set -e
 
-# If the database doesn't exist yet, seed it with initial data
-if [ ! -f "$DATABASE_PATH" ]; then
-  echo "No database found at $DATABASE_PATH — seeding with initial data..."
+SEED_VERSION="2"
+VERSION_FILE="$(dirname $DATABASE_PATH)/.seed-version"
+
+# Re-seed if database doesn't exist or seed version changed
+if [ ! -f "$DATABASE_PATH" ] || [ ! -f "$VERSION_FILE" ] || [ "$(cat $VERSION_FILE)" != "$SEED_VERSION" ]; then
+  echo "Seeding database (version $SEED_VERSION)..."
+  rm -f "$DATABASE_PATH"
   node dist/seed.cjs
+  echo "$SEED_VERSION" > "$VERSION_FILE"
   echo "Seed complete."
 else
-  echo "Database found at $DATABASE_PATH — skipping seed."
+  echo "Database up to date (version $SEED_VERSION) — skipping seed."
 fi
 
 # Start the production server
