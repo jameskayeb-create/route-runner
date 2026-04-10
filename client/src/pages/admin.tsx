@@ -7,7 +7,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
-import { Users, MapPin, Plus, Trash2, ArrowLeft, Send, Route } from "lucide-react";
+import { Textarea } from "@/components/ui/textarea";
+import { Users, MapPin, Plus, Trash2, ArrowLeft, Send, Route, Mail } from "lucide-react";
 
 interface Member {
   id: number;
@@ -25,6 +26,10 @@ export default function AdminPage() {
   // Add member form
   const [newEmail, setNewEmail] = useState("");
   const [newName, setNewName] = useState("");
+
+  // Notify members form
+  const [notifySubject, setNotifySubject] = useState("");
+  const [notifyMessage, setNotifyMessage] = useState("");
 
   // Add route form
   const [routeCompany, setRouteCompany] = useState("");
@@ -86,6 +91,29 @@ export default function AdminPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/admin/members"] });
       toast({ title: "Member removed" });
+    },
+  });
+
+  // Notify members
+  const notifyMembers = useMutation({
+    mutationFn: async () => {
+      const res = await apiRequest("POST", "/api/admin/notify-members", {
+        subject: notifySubject || undefined,
+        message: notifyMessage || undefined,
+      }, token!);
+      return res.json();
+    },
+    onSuccess: (data: any) => {
+      if (data.error) {
+        toast({ title: "Error", description: data.error, variant: "destructive" });
+      } else {
+        toast({ title: "Emails sent", description: `Sent to ${data.sent} member${data.sent !== 1 ? "s" : ""}${data.failed ? `, ${data.failed} failed` : ""}` });
+        setNotifySubject("");
+        setNotifyMessage("");
+      }
+    },
+    onError: (err: any) => {
+      toast({ title: "Error", description: err.message, variant: "destructive" });
     },
   });
 
@@ -263,6 +291,43 @@ export default function AdminPage() {
                     </div>
                   ))}
                 </div>
+              </CardContent>
+            </Card>
+
+            {/* Send Member Update */}
+            <Card>
+              <CardHeader className="pb-3">
+                <h2 className="text-sm font-semibold flex items-center gap-2">
+                  <Mail className="w-4 h-4" /> Send Member Update
+                </h2>
+              </CardHeader>
+              <CardContent>
+                <form
+                  onSubmit={(e) => { e.preventDefault(); notifyMembers.mutate(); }}
+                  className="space-y-4"
+                >
+                  <div className="space-y-2">
+                    <Label>Subject (optional)</Label>
+                    <Input
+                      placeholder="New Routes Available — Route Runner"
+                      value={notifySubject}
+                      onChange={(e) => setNotifySubject(e.target.value)}
+                    />
+                  </div>
+                  <div className="space-y-2">
+                    <Label>Message (optional)</Label>
+                    <Textarea
+                      placeholder="e.g. 5 new routes added in California and Texas this week!"
+                      value={notifyMessage}
+                      onChange={(e) => setNotifyMessage(e.target.value)}
+                      rows={3}
+                    />
+                  </div>
+                  <Button type="submit" disabled={notifyMembers.isPending}>
+                    <Mail className="w-4 h-4 mr-2" />
+                    {notifyMembers.isPending ? "Sending..." : `Send Email to All Members (${memberCount})`}
+                  </Button>
+                </form>
               </CardContent>
             </Card>
           </div>

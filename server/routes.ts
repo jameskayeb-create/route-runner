@@ -284,6 +284,91 @@ export async function registerRoutes(server: Server, app: Express) {
     }
   });
 
+  // ======= ADMIN: NOTIFY MEMBERS =======
+  app.post("/api/admin/notify-members", authMiddleware, adminMiddleware, async (req: any, res) => {
+    try {
+      const { subject, message, highlightRouteIds } = req.body;
+      const emailSubject = subject || "New Routes Available — Route Runner";
+
+      // Only send to members, not admins
+      const allMembers = storage.getAllMembers().filter((u: any) => u.role === "member");
+      if (allMembers.length === 0) {
+        return res.json({ sent: 0, failed: 0, errors: ["No members found"] });
+      }
+
+      // Fetch highlighted routes if provided
+      const highlightedRoutes: any[] = [];
+      if (Array.isArray(highlightRouteIds) && highlightRouteIds.length > 0) {
+        for (const id of highlightRouteIds) {
+          const route = storage.getRouteById(Number(id));
+          if (route) highlightedRoutes.push(route);
+        }
+      }
+
+      // Build route list HTML
+      let routesHtml = "";
+      if (highlightedRoutes.length > 0) {
+        routesHtml = `
+          <div style="margin: 24px 0;">
+            <h3 style="color: #D4A017; font-size: 16px; margin-bottom: 12px;">Featured Routes</h3>
+            ${highlightedRoutes.map((r: any) => {
+              const pay = r.payMin && r.payMax
+                ? `$${Number(r.payMin).toLocaleString()} – $${Number(r.payMax).toLocaleString()} ${r.payUnit || ""}`
+                : r.payMin
+                  ? `$${Number(r.payMin).toLocaleString()} ${r.payUnit || ""}`
+                  : "Pay TBD";
+              const location = [r.metroCity, r.state].filter(Boolean).join(", ");
+              return `
+                <div style="background: #2a2a2a; border: 1px solid #333; border-radius: 6px; padding: 16px; margin-bottom: 8px;">
+                  <p style="margin: 0 0 4px 0; font-weight: bold; color: #fff;">${r.company || "Unknown Company"}</p>
+                  <p style="margin: 0 0 4px 0; color: #ccc; font-size: 14px;">${location || "Location TBD"} — ${pay}</p>
+                  ${r.sourceUrl ? `<a href="${r.sourceUrl}" style="color: #D4A017; font-size: 14px; text-decoration: underline;">View Route &rarr;</a>` : ""}
+                </div>
+              `;
+            }).join("")}
+          </div>
+        `;
+      }
+
+      let sent = 0;
+      let failed = 0;
+      const errors: string[] = [];
+
+      for (const member of allMembers) {
+        try {
+          const appUrl = process.env.APP_URL || "https://routes.sixfigurecouriers.com";
+          await getResend().emails.send({
+            from: "Route Runner <noreply@sixfigurecouriers.com>",
+            to: member.email,
+            subject: emailSubject,
+            html: `
+              <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a1a; color: #fff; padding: 40px; border-radius: 8px;">
+                <h1 style="color: #D4A017; margin-bottom: 4px;">Route Runner</h1>
+                <p style="color: #888; margin-top: 0;">by Six Figure Courier</p>
+                <hr style="border-color: #333; margin: 24px 0;" />
+                <p>Hey ${member.name || "there"},</p>
+                ${message ? `<p>${message}</p>` : "<p>We've got new routes available for you. Log in to check them out!</p>"}
+                ${routesHtml}
+                <div style="text-align: center; margin: 32px 0;">
+                  <a href="${appUrl}" style="display: inline-block; background: #D4A017; color: #1a1a1a; font-weight: bold; padding: 12px 32px; border-radius: 6px; text-decoration: none;">Log In to Route Runner</a>
+                </div>
+                <p style="color: #888; font-size: 14px;">— The Six Figure Courier Team</p>
+              </div>
+            `,
+          });
+          sent++;
+        } catch (emailErr: any) {
+          failed++;
+          errors.push(`${member.email}: ${emailErr.message}`);
+        }
+      }
+
+      res.json({ sent, failed, errors });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   // ======= COMPANIES =======
   app.get("/api/companies", authMiddleware, (_req, res) => {
     const companies = storage.getCompanies();
