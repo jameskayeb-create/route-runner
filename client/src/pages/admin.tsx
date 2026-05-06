@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { Users, MapPin, Plus, Trash2, ArrowLeft, Send, Route, Mail, Flag, CheckCircle, ExternalLink } from "lucide-react";
+import { Users, MapPin, Plus, Trash2, ArrowLeft, Send, Route, Mail, Flag, CheckCircle, ExternalLink, Search, List } from "lucide-react";
 
 interface Member {
   id: number;
@@ -21,7 +21,8 @@ interface Member {
 export default function AdminPage() {
   const { token, user } = useAuth();
   const { toast } = useToast();
-  const [tab, setTab] = useState<"members" | "routes" | "flagged">("members");
+  const [tab, setTab] = useState<"members" | "routes" | "manage" | "flagged">("members");
+  const [routeSearch, setRouteSearch] = useState("");
 
   // Add member form
   const [newEmail, setNewEmail] = useState("");
@@ -60,6 +61,35 @@ export default function AdminPage() {
       return res.json();
     },
     enabled: !!token,
+  });
+
+  // All routes for manage tab
+  const { data: allRoutes = [] } = useQuery<any[]>({
+    queryKey: ["/api/routes/all-admin"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/routes?limit=500", undefined, token!);
+      return res.json();
+    },
+    enabled: !!token && user?.role === "admin" && tab === "manage",
+  });
+
+  const deleteRoute = useMutation({
+    mutationFn: async (id: number) => { await apiRequest("DELETE", `/api/routes/${id}`, undefined, token!); },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/routes/all-admin"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/routes/stats"] });
+      toast({ title: "Route removed" });
+    },
+  });
+
+  const filteredRoutes = allRoutes.filter((r: any) => {
+    if (!routeSearch) return true;
+    const q = routeSearch.toLowerCase();
+    return (
+      (r.company || "").toLowerCase().includes(q) ||
+      (r.state || "").toLowerCase().includes(q) ||
+      (r.metroCity || "").toLowerCase().includes(q)
+    );
   });
 
   // Flagged routes
@@ -235,6 +265,16 @@ export default function AdminPage() {
             }`}
           >
             <Route className="w-4 h-4" /> Add Route
+          </button>
+          <button
+            onClick={() => setTab("manage")}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              tab === "manage"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <List className="w-4 h-4" /> Manage Routes
           </button>
           <button
             onClick={() => setTab("flagged")}
@@ -435,6 +475,57 @@ export default function AdminPage() {
                   {createRoute.isPending ? "Adding..." : "Add Route"}
                 </Button>
               </form>
+            </CardContent>
+          </Card>
+        )}
+
+        {tab === "manage" && (
+          <Card>
+            <CardHeader className="pb-3">
+              <div className="flex items-center justify-between">
+                <h2 className="text-sm font-semibold flex items-center gap-2">
+                  <List className="w-4 h-4" /> All Routes
+                  <span className="text-xs text-muted-foreground font-normal">({filteredRoutes.length} shown)</span>
+                </h2>
+                <div className="relative w-56">
+                  <Search className="absolute left-2.5 top-2.5 w-3.5 h-3.5 text-muted-foreground" />
+                  <input
+                    type="text"
+                    placeholder="Search company, state, city…"
+                    value={routeSearch}
+                    onChange={(e) => setRouteSearch(e.target.value)}
+                    className="w-full pl-8 pr-3 h-9 rounded-md border border-input bg-background text-sm focus:outline-none focus:ring-1 focus:ring-primary"
+                  />
+                </div>
+              </div>
+            </CardHeader>
+            <CardContent className="p-0">
+              <div className="divide-y divide-border/50 max-h-[600px] overflow-y-auto">
+                {filteredRoutes.map((r: any) => (
+                  <div key={r.id} className="flex items-center justify-between px-6 py-3 hover:bg-muted/30">
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-medium truncate">{r.company}</p>
+                      <p className="text-xs text-muted-foreground">{r.metroCity && `${r.metroCity}, `}{r.state} · {r.equipmentCategory}</p>
+                    </div>
+                    <div className="flex items-center gap-3 ml-4 flex-shrink-0">
+                      {r.sourceUrl && (
+                        <a href={r.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">
+                          <ExternalLink className="w-3.5 h-3.5" />
+                        </a>
+                      )}
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-7 w-7 p-0 hover:text-destructive"
+                        onClick={() => { if (confirm(`Remove "${r.company}" in ${r.state}?`)) deleteRoute.mutate(r.id); }}
+                        disabled={deleteRoute.isPending}
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </Button>
+                    </div>
+                  </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
         )}
