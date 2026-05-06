@@ -2,6 +2,10 @@ import express, { type Request, Response, NextFunction } from "express";
 import { registerRoutes } from "./routes";
 import { serveStatic } from "./static";
 import { createServer } from "http";
+import { db } from "./storage";
+
+// Add flag_count column if it doesn't exist yet (safe to run on every startup)
+try { db.prepare("ALTER TABLE routes ADD COLUMN flag_count INTEGER NOT NULL DEFAULT 0").run(); } catch {}
 
 const app = express();
 const httpServer = createServer(app);

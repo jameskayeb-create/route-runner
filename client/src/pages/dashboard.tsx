@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import {
   Search, MapPin, Truck, DollarSign, TrendingUp, ExternalLink,
-  ChevronLeft, ChevronRight, SlidersHorizontal, X, Sparkles, Building2, KeyRound
+  ChevronLeft, ChevronRight, SlidersHorizontal, X, Sparkles, Building2, KeyRound, Flag
 } from "lucide-react";
 import type { Route } from "@shared/schema";
 
@@ -61,6 +61,19 @@ export default function Dashboard() {
   const [page, setPage] = useState(0);
   const [showFilters, setShowFilters] = useState(false);
   const PAGE_SIZE = 25;
+
+  // Flagged routes (session only)
+  const [flagged, setFlagged] = useState<Set<number>>(new Set());
+
+  const handleFlag = async (id: number) => {
+    try {
+      await apiRequest("POST", `/api/routes/${id}/flag`, undefined, token!);
+      setFlagged(prev => new Set(prev).add(id));
+      toast({ title: "Thanks for the report", description: "We'll review this listing." });
+    } catch {
+      toast({ title: "Error", description: "Could not submit report.", variant: "destructive" });
+    }
+  };
 
   // Change password
   const [showPasswordForm, setShowPasswordForm] = useState(false);
@@ -395,6 +408,15 @@ export default function Dashboard() {
                           </Button>
                         </a>
                       )}
+                      <button
+                        onClick={() => handleFlag(route.id)}
+                        disabled={flagged.has(route.id)}
+                        className="text-[10px] text-muted-foreground/50 hover:text-destructive flex items-center gap-1 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
+                        data-testid={`button-flag-${route.id}`}
+                      >
+                        <Flag className="w-2.5 h-2.5" />
+                        {flagged.has(route.id) ? "Reported" : "Report expired"}
+                      </button>
                     </div>
                   </div>
                 </CardContent>

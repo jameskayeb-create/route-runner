@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { Users, MapPin, Plus, Trash2, ArrowLeft, Send, Route, Mail } from "lucide-react";
+import { Users, MapPin, Plus, Trash2, ArrowLeft, Send, Route, Mail, Flag, CheckCircle, ExternalLink } from "lucide-react";
 
 interface Member {
   id: number;
@@ -21,7 +21,7 @@ interface Member {
 export default function AdminPage() {
   const { token, user } = useAuth();
   const { toast } = useToast();
-  const [tab, setTab] = useState<"members" | "routes">("members");
+  const [tab, setTab] = useState<"members" | "routes" | "flagged">("members");
 
   // Add member form
   const [newEmail, setNewEmail] = useState("");
@@ -60,6 +60,26 @@ export default function AdminPage() {
       return res.json();
     },
     enabled: !!token,
+  });
+
+  // Flagged routes
+  const { data: flaggedRoutes = [], refetch: refetchFlagged } = useQuery<any[]>({
+    queryKey: ["/api/admin/flagged-routes"],
+    queryFn: async () => {
+      const res = await apiRequest("GET", "/api/admin/flagged-routes", undefined, token!);
+      return res.json();
+    },
+    enabled: !!token && user?.role === "admin",
+  });
+
+  const removeRoute = useMutation({
+    mutationFn: async (id: number) => { await apiRequest("DELETE", `/api/routes/${id}`, undefined, token!); },
+    onSuccess: () => { refetchFlagged(); queryClient.invalidateQueries({ queryKey: ["/api/routes"] }); toast({ title: "Route removed" }); },
+  });
+
+  const unflagRoute = useMutation({
+    mutationFn: async (id: number) => { await apiRequest("PATCH", `/api/routes/${id}/unflag`, undefined, token!); },
+    onSuccess: () => { refetchFlagged(); toast({ title: "Flag cleared" }); },
   });
 
   // Create member
@@ -215,6 +235,22 @@ export default function AdminPage() {
             }`}
           >
             <Route className="w-4 h-4" /> Add Route
+          </button>
+          <button
+            onClick={() => setTab("flagged")}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              tab === "flagged"
+                ? "border-destructive text-destructive"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <Flag className="w-4 h-4" />
+            Flagged
+            {flaggedRoutes.length > 0 && (
+              <span className="bg-destructive text-destructive-foreground text-xs rounded-full px-1.5 py-0.5 min-w-[18px] text-center">
+                {flaggedRoutes.length}
+              </span>
+            )}
           </button>
         </div>
 
@@ -399,6 +435,65 @@ export default function AdminPage() {
                   {createRoute.isPending ? "Adding..." : "Add Route"}
                 </Button>
               </form>
+            </CardContent>
+          </Card>
+        )}
+
+        {tab === "flagged" && (
+          <Card>
+            <CardHeader className="pb-3">
+              <h2 className="text-sm font-semibold flex items-center gap-2">
+                <Flag className="w-4 h-4 text-destructive" />
+                Member-Reported Routes
+                <span className="text-xs text-muted-foreground font-normal">— review and remove expired listings</span>
+              </h2>
+            </CardHeader>
+            <CardContent>
+              {flaggedRoutes.length === 0 ? (
+                <div className="text-center py-10">
+                  <CheckCircle className="w-8 h-8 text-green-500 mx-auto mb-2" />
+                  <p className="text-sm text-muted-foreground">No flagged routes — all listings look good.</p>
+                </div>
+              ) : (
+                <div className="space-y-0 divide-y divide-border/50">
+                  {flaggedRoutes.map((r: any) => (
+                    <div key={r.id} className="py-4 flex items-start justify-between gap-4">
+                      <div className="space-y-1 flex-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                          <p className="text-sm font-medium">{r.company || r.companyName}</p>
+                          <span className="bg-destructive/20 text-destructive text-xs px-1.5 py-0.5 rounded-full">
+                            {r.flag_count || r.flagCount} report{(r.flag_count || r.flagCount) > 1 ? "s" : ""}
+                          </span>
+                        </div>
+                        <p className="text-xs text-muted-foreground">{r.metroCity}, {r.state}</p>
+                        {r.sourceUrl && (
+                          <a href={r.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline flex items-center gap-1 truncate max-w-xs">
+                            <ExternalLink className="w-3 h-3 flex-shrink-0" /> Check listing
+                          </a>
+                        )}
+                      </div>
+                      <div className="flex gap-2 flex-shrink-0">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => unflagRoute.mutate(r.id)}
+                          disabled={unflagRoute.isPending}
+                        >
+                          Looks fine
+                        </Button>
+                        <Button
+                          variant="destructive"
+                          size="sm"
+                          onClick={() => { if (confirm(`Remove "${r.company || r.companyName}"?`)) removeRoute.mutate(r.id); }}
+                          disabled={removeRoute.isPending}
+                        >
+                          Remove
+                        </Button>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              )}
             </CardContent>
           </Card>
         )}

@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import type { Server } from "http";
-import { storage } from "./storage";
+import { storage, db } from "./storage";
 import { loginSchema, registerSchema, insertRouteSchema } from "@shared/schema";
 import * as crypto from "crypto";
 import { Resend } from "resend";
@@ -168,6 +168,35 @@ export async function registerRoutes(server: Server, app: Express) {
   app.delete("/api/routes/:id", authMiddleware, adminMiddleware, (req: any, res) => {
     storage.deleteRoute(Number(req.params.id));
     res.json({ ok: true });
+  });
+
+  // ======= FLAG ROUTE AS EXPIRED =======
+  app.post("/api/routes/:id/flag", authMiddleware, (req: any, res) => {
+    try {
+      const id = Number(req.params.id);
+      db.prepare("UPDATE routes SET flag_count = COALESCE(flag_count, 0) + 1 WHERE id = ?").run(id);
+      res.json({ ok: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.patch("/api/routes/:id/unflag", authMiddleware, adminMiddleware, (req: any, res) => {
+    try {
+      db.prepare("UPDATE routes SET flag_count = 0 WHERE id = ?").run(Number(req.params.id));
+      res.json({ ok: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.get("/api/admin/flagged-routes", authMiddleware, adminMiddleware, (_req: any, res) => {
+    try {
+      const flagged = db.prepare("SELECT * FROM routes WHERE flag_count >= 1 ORDER BY flag_count DESC").all();
+      res.json(flagged);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
   });
 
   // ======= ADMIN: LIST MEMBERS =======
