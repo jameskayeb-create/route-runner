@@ -23,6 +23,8 @@ export default function AdminPage() {
   const { toast } = useToast();
   const [tab, setTab] = useState<"members" | "routes" | "manage" | "flagged">("members");
   const [routeSearch, setRouteSearch] = useState("");
+  const [editingRouteId, setEditingRouteId] = useState<number | null>(null);
+  const [editUrl, setEditUrl] = useState("");
 
   // Add member form
   const [newEmail, setNewEmail] = useState("");
@@ -79,6 +81,17 @@ export default function AdminPage() {
       queryClient.invalidateQueries({ queryKey: ["/api/routes/all-admin"] });
       queryClient.invalidateQueries({ queryKey: ["/api/routes/stats"] });
       toast({ title: "Route removed" });
+    },
+  });
+
+  const updateRouteUrl = useMutation({
+    mutationFn: async ({ id, url }: { id: number; url: string }) => {
+      await apiRequest("PATCH", `/api/routes/${id}`, { sourceUrl: url }, token!);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/routes/all-admin"] });
+      setEditingRouteId(null);
+      toast({ title: "Link updated" });
     },
   });
 
@@ -502,27 +515,60 @@ export default function AdminPage() {
             <CardContent className="p-0">
               <div className="divide-y divide-border/50 max-h-[600px] overflow-y-auto">
                 {filteredRoutes.map((r: any) => (
-                  <div key={r.id} className="flex items-center justify-between px-6 py-3 hover:bg-muted/30">
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{r.company}</p>
-                      <p className="text-xs text-muted-foreground">{r.metroCity && `${r.metroCity}, `}{r.state} · {r.equipmentCategory}</p>
+                  <div key={r.id} className="px-6 py-3 hover:bg-muted/30">
+                    <div className="flex items-center justify-between">
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-medium truncate">{r.company}</p>
+                        <p className="text-xs text-muted-foreground">{r.metroCity && `${r.metroCity}, `}{r.state} · {r.equipmentCategory}</p>
+                      </div>
+                      <div className="flex items-center gap-2 ml-4 flex-shrink-0">
+                        {r.sourceUrl && (
+                          <a href={r.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-primary hover:text-primary/80">
+                            <ExternalLink className="w-3.5 h-3.5" />
+                          </a>
+                        )}
+                        <Button
+                          variant="ghost" size="sm"
+                          className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                          onClick={() => { setEditingRouteId(editingRouteId === r.id ? null : r.id); setEditUrl(r.sourceUrl || ""); }}
+                        >
+                          Edit Link
+                        </Button>
+                        <Button
+                          variant="ghost" size="sm"
+                          className="h-7 w-7 p-0 hover:text-destructive"
+                          onClick={() => { if (confirm(`Remove "${r.company}" in ${r.state}?`)) deleteRoute.mutate(r.id); }}
+                          disabled={deleteRoute.isPending}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex items-center gap-3 ml-4 flex-shrink-0">
-                      {r.sourceUrl && (
-                        <a href={r.sourceUrl} target="_blank" rel="noopener noreferrer" className="text-xs text-primary hover:underline">
-                          <ExternalLink className="w-3.5 h-3.5" />
-                        </a>
-                      )}
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        className="h-7 w-7 p-0 hover:text-destructive"
-                        onClick={() => { if (confirm(`Remove "${r.company}" in ${r.state}?`)) deleteRoute.mutate(r.id); }}
-                        disabled={deleteRoute.isPending}
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </Button>
-                    </div>
+                    {editingRouteId === r.id && (
+                      <div className="mt-2 flex gap-2">
+                        <input
+                          type="url"
+                          value={editUrl}
+                          onChange={(e) => setEditUrl(e.target.value)}
+                          placeholder="https://..."
+                          className="flex-1 h-8 px-3 rounded-md border border-input bg-background text-xs focus:outline-none focus:ring-1 focus:ring-primary"
+                          autoFocus
+                        />
+                        <Button
+                          size="sm" className="h-8 text-xs"
+                          onClick={() => updateRouteUrl.mutate({ id: r.id, url: editUrl })}
+                          disabled={updateRouteUrl.isPending || !editUrl}
+                        >
+                          Save
+                        </Button>
+                        <Button
+                          variant="ghost" size="sm" className="h-8 text-xs"
+                          onClick={() => setEditingRouteId(null)}
+                        >
+                          Cancel
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 ))}
               </div>
