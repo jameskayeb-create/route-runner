@@ -215,6 +215,50 @@ export async function registerRoutes(server: Server, app: Express) {
     res.json({ ok: true });
   });
 
+  // ======= ADMIN: RESET MEMBER PASSWORD =======
+  app.post("/api/admin/members/:id/reset-password", authMiddleware, adminMiddleware, async (req: any, res) => {
+    try {
+      const user = storage.getUserById(Number(req.params.id));
+      if (!user) return res.status(404).json({ error: "User not found" });
+
+      const newPassword = crypto.randomBytes(6).toString("hex");
+      const hashed = crypto.createHash("sha256").update(newPassword).digest("hex");
+      storage.updatePassword(user.id, hashed);
+
+      // Email new credentials
+      try {
+        await getResend().emails.send({
+          from: "Route Runner <noreply@sixfigurecouriers.com>",
+          to: user.email,
+          subject: "Your Route Runner Password Has Been Reset",
+          html: `
+            <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #1a1a1a; color: #fff; padding: 40px; border-radius: 8px;">
+              <h1 style="color: #D4A017; margin-bottom: 4px;">Route Runner</h1>
+              <p style="color: #888; margin-top: 0;">by Six Figure Courier</p>
+              <hr style="border-color: #333; margin: 24px 0;" />
+              <p>Hey ${user.name || "there"},</p>
+              <p>Your password has been reset by an admin. Here are your updated login details:</p>
+              <div style="background: #2a2a2a; border: 1px solid #333; border-radius: 6px; padding: 20px; margin: 24px 0;">
+                <p style="margin: 4px 0;"><strong style="color: #D4A017;">Login URL:</strong> <a href="${process.env.APP_URL || 'https://routes.sixfigurecouriers.com'}" style="color: #D4A017;">${process.env.APP_URL || 'https://routes.sixfigurecouriers.com'}</a></p>
+                <p style="margin: 4px 0;"><strong style="color: #D4A017;">Email:</strong> ${user.email}</p>
+                <p style="margin: 4px 0;"><strong style="color: #D4A017;">New Password:</strong> ${newPassword}</p>
+              </div>
+              <p style="color: #888; font-size: 14px;">You can change your password after logging in. If you didn't request this reset, reply to this email.</p>
+              <p>— The Six Figure Courier Team</p>
+            </div>
+          `
+        });
+      } catch (emailErr: any) {
+        // Return password even if email fails so admin can share manually
+        return res.json({ ok: true, newPassword, emailSent: false, warning: emailErr.message });
+      }
+
+      res.json({ ok: true, newPassword, emailSent: true });
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
   // ======= ADMIN: CREATE MEMBER =======
   app.post("/api/admin/create-member", authMiddleware, adminMiddleware, async (req: any, res) => {
     try {

@@ -157,6 +157,25 @@ export default function AdminPage() {
     },
   });
 
+  const resetPassword = useMutation({
+    mutationFn: async (id: number) => {
+      const res = await apiRequest("POST", `/api/admin/members/${id}/reset-password`, {}, token!);
+      return res.json();
+    },
+    onSuccess: (data: any) => {
+      if (data.emailSent) {
+        toast({ title: "Password reset", description: "New credentials emailed to the member." });
+      } else {
+        toast({
+          title: "Password reset — email failed",
+          description: `New password: ${data.newPassword} (copy this and send manually)`,
+          variant: "destructive",
+        });
+      }
+    },
+    onError: () => toast({ title: "Reset failed", variant: "destructive" }),
+  });
+
   // Notify members
   const notifyMembers = useMutation({
     mutationFn: async () => {
@@ -367,14 +386,26 @@ export default function AdminPage() {
                           {m.createdAt ? new Date(m.createdAt).toLocaleDateString() : ""}
                         </span>
                         {m.role !== "admin" && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => { if (confirm(`Remove ${m.email}?`)) deleteMember.mutate(m.id); }}
-                            data-testid={`button-delete-member-${m.id}`}
-                          >
-                            <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
-                          </Button>
+                          <>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="h-7 px-2 text-xs text-muted-foreground hover:text-foreground"
+                              onClick={() => { if (confirm(`Reset password for ${m.email}? They will receive a new password by email.`)) resetPassword.mutate(m.id); }}
+                              disabled={resetPassword.isPending}
+                              data-testid={`button-reset-password-${m.id}`}
+                            >
+                              Reset PW
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => { if (confirm(`Remove ${m.email}?`)) deleteMember.mutate(m.id); }}
+                              data-testid={`button-delete-member-${m.id}`}
+                            >
+                              <Trash2 className="w-3.5 h-3.5 text-muted-foreground hover:text-destructive" />
+                            </Button>
+                          </>
                         )}
                       </div>
                     </div>
