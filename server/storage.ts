@@ -66,6 +66,9 @@ export interface IStorage {
   getAllMembers(): User[];
   deleteUser(id: number): void;
   updatePassword(id: number, hashedPassword: string): void;
+  incrementFlagCount(id: number): void;
+  resetFlagCount(id: number): void;
+  getFlaggedRoutes(): Route[];
 
   // Routes
   getRoutes(filters?: RouteFilters): Route[];
@@ -134,6 +137,18 @@ export class DatabaseStorage implements IStorage {
 
   updatePassword(id: number, hashedPassword: string): void {
     db.update(users).set({ password: hashedPassword }).where(eq(users.id, id)).run();
+  }
+
+  incrementFlagCount(id: number): void {
+    db.run(sql`UPDATE routes SET flag_count = COALESCE(flag_count, 0) + 1 WHERE id = ${id}`);
+  }
+
+  resetFlagCount(id: number): void {
+    db.run(sql`UPDATE routes SET flag_count = 0 WHERE id = ${id}`);
+  }
+
+  getFlaggedRoutes(): Route[] {
+    return db.select().from(routes).where(sql`flag_count >= 1`).orderBy(sql`flag_count DESC`).all() as Route[];
   }
 
   getRoutes(filters?: RouteFilters): Route[] {
