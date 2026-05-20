@@ -13,6 +13,7 @@ const sqlite = new Database(dbPath);
 sqlite.pragma("journal_mode = WAL");
 
 export const db = drizzle(sqlite);
+export const rawDb = sqlite; // Raw better-sqlite3 for columns not in Drizzle schema
 
 // Run migrations
 sqlite.exec(`
@@ -140,15 +141,15 @@ export class DatabaseStorage implements IStorage {
   }
 
   incrementFlagCount(id: number): void {
-    db.run(sql`UPDATE routes SET flag_count = COALESCE(flag_count, 0) + 1 WHERE id = ${id}`);
+    rawDb.prepare("UPDATE routes SET flag_count = COALESCE(flag_count, 0) + 1 WHERE id = ?").run(id);
   }
 
   resetFlagCount(id: number): void {
-    db.run(sql`UPDATE routes SET flag_count = 0 WHERE id = ${id}`);
+    rawDb.prepare("UPDATE routes SET flag_count = 0 WHERE id = ?").run(id);
   }
 
   getFlaggedRoutes(): Route[] {
-    return db.select().from(routes).where(sql`flag_count >= 1`).orderBy(sql`flag_count DESC`).all() as Route[];
+    return rawDb.prepare("SELECT * FROM routes WHERE flag_count >= 1 ORDER BY flag_count DESC").all() as Route[];
   }
 
   getRoutes(filters?: RouteFilters): Route[] {
