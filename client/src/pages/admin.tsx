@@ -8,7 +8,8 @@ import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { useToast } from "@/hooks/use-toast";
 import { Textarea } from "@/components/ui/textarea";
-import { Users, MapPin, Plus, Trash2, ArrowLeft, Send, Route, Mail, Flag, CheckCircle, ExternalLink, Search, List } from "lucide-react";
+import { Users, MapPin, Plus, Trash2, ArrowLeft, Send, Route, Mail, Flag, CheckCircle, ExternalLink, Search, List, BookOpen } from "lucide-react";
+import ResourcesAdmin from "@/components/resources-admin";
 
 interface Member {
   id: number;
@@ -21,7 +22,7 @@ interface Member {
 export default function AdminPage() {
   const { token, user } = useAuth();
   const { toast } = useToast();
-  const [tab, setTab] = useState<"members" | "routes" | "manage" | "flagged">("members");
+  const [tab, setTab] = useState<"members" | "routes" | "manage" | "flagged" | "resources">("members");
   const [routeSearch, setRouteSearch] = useState("");
   const [editingRouteId, setEditingRouteId] = useState<number | null>(null);
   const [editUrl, setEditUrl] = useState("");
@@ -323,6 +324,16 @@ export default function AdminPage() {
                 {flaggedRoutes.length}
               </span>
             )}
+          </button>
+          <button
+            onClick={() => setTab("resources")}
+            className={`flex items-center gap-2 px-4 py-2 text-sm font-medium border-b-2 transition-colors ${
+              tab === "resources"
+                ? "border-primary text-primary"
+                : "border-transparent text-muted-foreground hover:text-foreground"
+            }`}
+          >
+            <BookOpen className="w-4 h-4" /> Resources
           </button>
         </div>
 
@@ -665,6 +676,8 @@ export default function AdminPage() {
             </CardContent>
           </Card>
         )}
+
+        {tab === "resources" && <ResourcesAdmin />}
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import { useHashLocation } from "wouter/use-hash-location";
 import AuthPage from "@/pages/auth-page";
 import Dashboard from "@/pages/dashboard";
 import AdminPage from "@/pages/admin";
+import ResourcesPage from "@/pages/resources";
 import { useEffect } from "react";
 
 function AppContent() {
@@ -23,6 +24,7 @@ function AppContent() {
     <Router hook={useHashLocation}>
       <Switch>
         <Route path="/admin" component={AdminPage} />
+        <Route path="/resources" component={ResourcesPage} />
         <Route path="/" component={Dashboard} />
       </Switch>
     </Router>
