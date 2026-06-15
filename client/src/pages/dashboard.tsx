@@ -167,6 +167,11 @@ export default function Dashboard() {
             <Button variant="ghost" size="sm" onClick={() => setShowPasswordForm(!showPasswordForm)} data-testid="button-change-password">
               <KeyRound className="w-3.5 h-3.5" />
             </Button>
+            <a href="/#/resources">
+              <Button variant="ghost" size="sm" data-testid="button-resources">
+                Resources
+              </Button>
+            </a>
             {user?.role === "admin" && (
               <a href="/#/admin">
                 <Button variant="outline" size="sm" data-testid="button-admin">
