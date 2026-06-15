@@ -7,6 +7,38 @@ import { rawDb } from "./storage";
 // Add flag_count column if it doesn't exist yet (safe to run on every startup)
 try { rawDb.prepare("ALTER TABLE routes ADD COLUMN flag_count INTEGER NOT NULL DEFAULT 0").run(); } catch {}
 
+// Resource companies table
+rawDb.prepare(`CREATE TABLE IF NOT EXISTS resource_companies (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  website TEXT,
+  phone TEXT,
+  state TEXT,
+  category TEXT,
+  notes TEXT,
+  created_at TEXT DEFAULT (datetime('now'))
+)`).run();
+
+// On-demand apps table
+rawDb.prepare(`CREATE TABLE IF NOT EXISTS resource_apps (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  website TEXT,
+  category TEXT,
+  description TEXT,
+  created_at TEXT DEFAULT (datetime('now'))
+)`).run();
+
+// Insurance/business links table
+rawDb.prepare(`CREATE TABLE IF NOT EXISTS resource_links (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT NOT NULL,
+  url TEXT,
+  category TEXT,
+  description TEXT,
+  created_at TEXT DEFAULT (datetime('now'))
+)`).run();
+
 const app = express();
 const httpServer = createServer(app);
 

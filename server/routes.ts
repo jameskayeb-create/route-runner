@@ -1,6 +1,6 @@
 import type { Express } from "express";
 import type { Server } from "http";
-import { storage, db } from "./storage";
+import { storage, db, rawDb } from "./storage";
 import { loginSchema, registerSchema, insertRouteSchema } from "@shared/schema";
 import * as crypto from "crypto";
 import { Resend } from "resend";
@@ -448,6 +448,152 @@ export async function registerRoutes(server: Server, app: Express) {
     res.json(companies);
   });
 
+  // ======= RESOURCES: COMPANIES (public read, admin write) =======
+  app.get("/api/resources/companies", authMiddleware, (_req, res) => {
+    const rows = rawDb.prepare(
+      "SELECT * FROM resource_companies ORDER BY state, name"
+    ).all();
+    res.json(rows);
+  });
+
+  app.post("/api/resources/companies", authMiddleware, adminMiddleware, (req: any, res) => {
+    try {
+      const { name, website, phone, state, category, notes } = req.body;
+      if (!name) return res.status(400).json({ error: "Name is required" });
+      const result = rawDb.prepare(
+        "INSERT INTO resource_companies (name, website, phone, state, category, notes) VALUES (?,?,?,?,?,?)"
+      ).run(name, website || null, phone || null, state || null, category || null, notes || null);
+      const row = rawDb.prepare("SELECT * FROM resource_companies WHERE id = ?").get(result.lastInsertRowid);
+      res.json(row);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.patch("/api/resources/companies/:id", authMiddleware, adminMiddleware, (req: any, res) => {
+    try {
+      const existing: any = rawDb.prepare("SELECT * FROM resource_companies WHERE id = ?").get(Number(req.params.id));
+      if (!existing) return res.status(404).json({ error: "Company not found" });
+      const { name, website, phone, state, category, notes } = req.body;
+      rawDb.prepare(
+        "UPDATE resource_companies SET name = ?, website = ?, phone = ?, state = ?, category = ?, notes = ? WHERE id = ?"
+      ).run(
+        name ?? existing.name,
+        website ?? existing.website,
+        phone ?? existing.phone,
+        state ?? existing.state,
+        category ?? existing.category,
+        notes ?? existing.notes,
+        existing.id
+      );
+      const row = rawDb.prepare("SELECT * FROM resource_companies WHERE id = ?").get(existing.id);
+      res.json(row);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.delete("/api/resources/companies/:id", authMiddleware, adminMiddleware, (req: any, res) => {
+    rawDb.prepare("DELETE FROM resource_companies WHERE id = ?").run(Number(req.params.id));
+    res.json({ ok: true });
+  });
+
+  // ======= RESOURCES: ON-DEMAND APPS (public read, admin write) =======
+  app.get("/api/resources/apps", authMiddleware, (_req, res) => {
+    const rows = rawDb.prepare(
+      "SELECT * FROM resource_apps ORDER BY category, name"
+    ).all();
+    res.json(rows);
+  });
+
+  app.post("/api/resources/apps", authMiddleware, adminMiddleware, (req: any, res) => {
+    try {
+      const { name, website, category, description } = req.body;
+      if (!name) return res.status(400).json({ error: "Name is required" });
+      const result = rawDb.prepare(
+        "INSERT INTO resource_apps (name, website, category, description) VALUES (?,?,?,?)"
+      ).run(name, website || null, category || null, description || null);
+      const row = rawDb.prepare("SELECT * FROM resource_apps WHERE id = ?").get(result.lastInsertRowid);
+      res.json(row);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.patch("/api/resources/apps/:id", authMiddleware, adminMiddleware, (req: any, res) => {
+    try {
+      const existing: any = rawDb.prepare("SELECT * FROM resource_apps WHERE id = ?").get(Number(req.params.id));
+      if (!existing) return res.status(404).json({ error: "App not found" });
+      const { name, website, category, description } = req.body;
+      rawDb.prepare(
+        "UPDATE resource_apps SET name = ?, website = ?, category = ?, description = ? WHERE id = ?"
+      ).run(
+        name ?? existing.name,
+        website ?? existing.website,
+        category ?? existing.category,
+        description ?? existing.description,
+        existing.id
+      );
+      const row = rawDb.prepare("SELECT * FROM resource_apps WHERE id = ?").get(existing.id);
+      res.json(row);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.delete("/api/resources/apps/:id", authMiddleware, adminMiddleware, (req: any, res) => {
+    rawDb.prepare("DELETE FROM resource_apps WHERE id = ?").run(Number(req.params.id));
+    res.json({ ok: true });
+  });
+
+  // ======= RESOURCES: INSURANCE / BUSINESS LINKS (public read, admin write) =======
+  app.get("/api/resources/links", authMiddleware, (_req, res) => {
+    const rows = rawDb.prepare(
+      "SELECT * FROM resource_links ORDER BY category, name"
+    ).all();
+    res.json(rows);
+  });
+
+  app.post("/api/resources/links", authMiddleware, adminMiddleware, (req: any, res) => {
+    try {
+      const { name, url, category, description } = req.body;
+      if (!name) return res.status(400).json({ error: "Name is required" });
+      const result = rawDb.prepare(
+        "INSERT INTO resource_links (name, url, category, description) VALUES (?,?,?,?)"
+      ).run(name, url || null, category || null, description || null);
+      const row = rawDb.prepare("SELECT * FROM resource_links WHERE id = ?").get(result.lastInsertRowid);
+      res.json(row);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.patch("/api/resources/links/:id", authMiddleware, adminMiddleware, (req: any, res) => {
+    try {
+      const existing: any = rawDb.prepare("SELECT * FROM resource_links WHERE id = ?").get(Number(req.params.id));
+      if (!existing) return res.status(404).json({ error: "Link not found" });
+      const { name, url, category, description } = req.body;
+      rawDb.prepare(
+        "UPDATE resource_links SET name = ?, url = ?, category = ?, description = ? WHERE id = ?"
+      ).run(
+        name ?? existing.name,
+        url ?? existing.url,
+        category ?? existing.category,
+        description ?? existing.description,
+        existing.id
+      );
+      const row = rawDb.prepare("SELECT * FROM resource_links WHERE id = ?").get(existing.id);
+      res.json(row);
+    } catch (err: any) {
+      res.status(500).json({ error: err.message });
+    }
+  });
+
+  app.delete("/api/resources/links/:id", authMiddleware, adminMiddleware, (req: any, res) => {
+    rawDb.prepare("DELETE FROM resource_links WHERE id = ?").run(Number(req.params.id));
+    res.json({ ok: true });
+  });
+
   // ======= SHOPIFY WEBHOOK =======
   app.post("/api/shopify/webhook", async (req, res) => {
     try {
@@ -609,7 +755,7 @@ export async function registerRoutes(server: Server, app: Express) {
 
         // Send welcome email via Resend
         try {
-          await resend.emails.send({
+          await getResend().emails.send({
             from: "Route Runner <noreply@sixfigurecouriers.com>",
             to: email,
             subject: "Welcome to Route Runner — Your Login Details",
