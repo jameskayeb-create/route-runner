@@ -501,48 +501,6 @@ export default function ResourcesPage() {
               </Card>
             </div>
 
-            {/* Know Your Numbers */}
-            <div className="space-y-3">
-              <h3 className="font-bold text-base">Know Your Numbers (CPM)</h3>
-              <Card className="border-border/60">
-                <CardContent className="pt-4 pb-4 space-y-3">
-                  <p className="text-xs font-semibold text-destructive">If you do not know how much it costs to operate your business, you will fail.</p>
-                  <p className="text-xs text-muted-foreground">Calculate your Cost Per Mile (CPM) by adding up all monthly costs, then dividing by total miles driven.</p>
-                  <div className="space-y-1">
-                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Example Monthly Costs:</p>
-                    {[
-                      ["Truck Payment", "$1,000"],
-                      ["Insurance", "$1,800"],
-                      ["Driver Pay (yourself)", "$4,000"],
-                      ["Maintenance Fund", "$1,200"],
-                      ["Business Savings", "$1,500"],
-                      ["Estimated Fuel", "~$3,000"],
-                      ["Monthly Break-Even", "$12,500"],
-                      ["Weekly Break-Even", "~$3,125"],
-                    ].map(([label, val]) => (
-                      <div key={label} className={`flex justify-between text-xs px-3 py-1.5 rounded ${
-                        label.includes("Break-Even") ? "bg-primary/10 border border-primary/30 font-semibold" : "border border-border/40"
-                      }`}>
-                        <span className="text-muted-foreground">{label}</span>
-                        <span className={label.includes("Break-Even") ? "text-primary" : ""}>{val}</span>
-                      </div>
-                    ))}
-                  </div>
-                </CardContent>
-              </Card>
-            </div>
-
-            {/* On-Demand Apps */}
-            <div className="space-y-3">
-              <h3 className="font-bold text-base">On-Demand & Load Board Apps</h3>
-              <p className="text-xs text-muted-foreground">Use these to supplement income between dedicated routes or while getting started. See the On-Demand Apps tab for full details.</p>
-              <div className="flex flex-wrap gap-2">
-                {["Dispatch It","Rapid US","Roadie","Uber Eats","DoorDash","Lugg","Pickup","Part Runner","Curri","Shipt","Senpex","Medzoomer","Try Hungry","Metro Speedy","Dolly","Bungii","Boomerang","uShip","Go Share","Veho","Frayt","Metrobi","Mothership","Dropoff","Shiply","Veyo","CBDriver"].map((app) => (
-                  <span key={app} className="text-xs bg-muted/60 text-muted-foreground px-2.5 py-1 rounded-full border border-border/50">{app}</span>
-                ))}
-              </div>
-            </div>
-
             {/* Contact info */}
             <div className="border border-border/40 rounded-xl p-4 text-center">
               <p className="text-xs text-muted-foreground">Need help? Contact Six Figure Courier support at{" "}
