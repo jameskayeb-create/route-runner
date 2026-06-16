@@ -12,7 +12,7 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { useToast } from "@/hooks/use-toast";
 import {
   Search, MapPin, Truck, DollarSign, TrendingUp, ExternalLink,
-  ChevronLeft, ChevronRight, SlidersHorizontal, X, Sparkles, Building2, KeyRound, Flag, BookOpen
+  ChevronLeft, ChevronRight, SlidersHorizontal, X, Sparkles, Building2, KeyRound, Flag
 } from "lucide-react";
 import type { Route } from "@shared/schema";
 
@@ -160,18 +160,12 @@ export default function Dashboard() {
             <span className="text-xs text-muted-foreground hidden sm:block">{user?.name}{user?.role === "admin" ? " (Admin)" : ""}</span>
             <a href="/#/resources">
               <Button variant="ghost" size="sm" data-testid="button-resources">
-                <BookOpen className="w-3.5 h-3.5 sm:mr-1.5" />
-                <span className="hidden sm:inline">Resources</span>
+                Resources
               </Button>
             </a>
             <Button variant="ghost" size="sm" onClick={() => setShowPasswordForm(!showPasswordForm)} data-testid="button-change-password">
               <KeyRound className="w-3.5 h-3.5" />
             </Button>
-            <a href="/#/resources">
-              <Button variant="ghost" size="sm" data-testid="button-resources">
-                Resources
-              </Button>
-            </a>
             {user?.role === "admin" && (
               <a href="/#/admin">
                 <Button variant="outline" size="sm" data-testid="button-admin">
