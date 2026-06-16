@@ -350,34 +350,205 @@ export default function ResourcesPage() {
           </div>
         )}
 
-        {/* Getting Started (static) */}
+        {/* Getting Started */}
         {tab === "getting-started" && (
-          <div className="grid gap-3 md:grid-cols-2">
-            {[
-              {
-                title: "1. Form Your Business",
-                body: "Register an LLC in your state, get an EIN from the IRS, and open a dedicated business bank account.",
-              },
-              {
-                title: "2. Get Insured",
-                body: "Most contracts require commercial auto and general liability coverage. See the Insurance & Business tab for providers.",
-              },
-              {
-                title: "3. Set Up Your Equipment",
-                body: "Choose the right vehicle for the routes you want — cargo van, sprinter, or box truck — and keep maintenance records.",
-              },
-              {
-                title: "4. Apply to Routes",
-                body: "Browse the route board, apply directly through the source links, and follow up with the companies in the directory.",
-              },
-            ].map((card) => (
-              <Card key={card.title} className="border-border/50">
-                <CardContent className="p-4 space-y-1.5">
-                  <p className="text-sm font-semibold text-primary">{card.title}</p>
-                  <p className="text-xs text-muted-foreground">{card.body}</p>
+          <div className="space-y-8">
+
+            {/* Mindset */}
+            <div className="border border-primary/30 bg-primary/5 rounded-xl p-5 space-y-2">
+              <p className="text-primary font-bold text-sm uppercase tracking-wide">Mindset First</p>
+              <p className="text-sm text-foreground font-medium">Execution is key. Give yourself reasonable daily goals and check at least one off every day. Do not sit around reading course information without taking action.</p>
+              <p className="text-sm text-primary font-bold">Apply. Apply. Apply.</p>
+              <p className="text-xs text-muted-foreground">You may start with one route and want to try others. Do that. Learn what type of freight you like to move and keep reaching for more. Never stop learning.</p>
+            </div>
+
+            {/* Quick Start Steps */}
+            <div className="space-y-3">
+              <h3 className="font-bold text-base">Quick Start Guide</h3>
+              {[
+                {
+                  step: 1,
+                  title: "Form the Company & Meet the Requirements",
+                  body: "LLC or Corp, EIN, DOT number, MC number (if needed), FMCSA registration, and Commercial Insurance. These must be completed BEFORE registering for contracts.",
+                  links: [
+                    { label: "Form LLC — LegalZoom", url: "https://www.legalzoom.com" },
+                    { label: "Free EIN — IRS.gov", url: "https://www.irs.gov" },
+                    { label: "DOT & MC # — FMCSA", url: "https://www.fmcsa.dot.gov" },
+                  ],
+                },
+                {
+                  step: 2,
+                  title: "Know the Business & Do the Math",
+                  body: "Understand Dedicated vs Load Boards. Find stability in an unstable market by calculating your cost per mile for profit. Know your numbers before you start — if you don't know your costs, you will fail.",
+                  links: [],
+                },
+                {
+                  step: 3,
+                  title: "Research Companies That Contract",
+                  body: "Use the Company Directory tab to find companies in your state. Call first, then follow up by email or LinkedIn. Send 3-4 follow-up messages max and connect with at least 2-4 companies simultaneously.",
+                  links: [],
+                },
+                {
+                  step: 4,
+                  title: "Leasing, Renting or Purchasing a Vehicle",
+                  body: "Whether you rent, lease, or purchase is up to your budget. Many companies on our list accept rentals or leases (some require no decals on rentals). You will still need commercial insurance even with a rental.",
+                  links: [],
+                },
+                {
+                  step: 5,
+                  title: "Get Registered & Start with Your First Company",
+                  body: "Connect with at least 2-4 companies. When contacting companies, ask about: type of freight, requirements, advertised rate, length of contract, and possibility of adding additional vehicles.",
+                  links: [],
+                },
+                {
+                  step: 6,
+                  title: "Bonuses: Maximize Your Income",
+                  body: "Amazon Relay for Box Trucks, Dispatching (earn without driving), and Business Credit (access capital to scale). App Stacking: mix dedicated freight routes with on-demand apps to double your income.",
+                  links: [
+                    { label: "Amazon Relay", url: "https://relay.amazon.com" },
+                  ],
+                },
+              ].map(({ step, title, body, links }) => (
+                <Card key={step} className="border-border/60">
+                  <CardContent className="pt-4 pb-4">
+                    <div className="flex gap-3">
+                      <div className="flex-shrink-0 w-7 h-7 rounded-full bg-primary/20 text-primary flex items-center justify-center text-xs font-bold">{step}</div>
+                      <div className="flex-1 space-y-1.5">
+                        <p className="font-semibold text-sm">{title}</p>
+                        <p className="text-xs text-muted-foreground">{body}</p>
+                        {links.length > 0 && (
+                          <div className="flex flex-wrap gap-2 pt-1">
+                            {links.map((link) => (
+                              <a key={link.url} href={link.url} target="_blank" rel="noopener noreferrer"
+                                className="inline-flex items-center gap-1 text-xs text-primary hover:underline border border-primary/30 rounded px-2 py-0.5">
+                                ↗ {link.label}
+                              </a>
+                            ))}
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+
+            {/* Company Setup Checklist */}
+            <div className="space-y-3">
+              <h3 className="font-bold text-base">Company Setup Checklist</h3>
+              <Card className="border-border/60">
+                <CardContent className="pt-4 pb-4">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-1.5">
+                    {[
+                      "Business Name", "Business Address", "Telephone Number", "DBA (Doing Business As)",
+                      "TIN / EIN (Tax ID)", "Licenses & Permits", "Business Structure (LLC/Corp)",
+                      "Business Checking Account", "Business Email", "DNB (Dun & Bradstreet) Number",
+                      "Register with 411", "USDOT & MC Number", "Commercial Insurance",
+                    ].map((item) => (
+                      <div key={item} className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <span className="w-4 h-4 rounded border border-border flex-shrink-0" />
+                        {item}
+                      </div>
+                    ))}
+                  </div>
                 </CardContent>
               </Card>
-            ))}
+            </div>
+
+            {/* Insurance & Fees */}
+            <div className="space-y-3">
+              <h3 className="font-bold text-base">Insurance & Startup Costs</h3>
+              <Card className="border-border/60">
+                <CardContent className="pt-4 pb-4 space-y-3">
+                  <p className="text-xs text-muted-foreground">Being in the freight game requires a financial commitment upfront. Insurance is expensive — be prepared to put ~$3,000 down and pay ~$1,800/month. Shop around; every state has different prices.</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    {[
+                      { label: "Motor Carrier Permit", cost: "$300" },
+                      { label: "Insurance Downpayment", cost: "~$3,000" },
+                      { label: "Truck Rental/Lease Down", cost: "~$2,000" },
+                      { label: "Company Incorporation", cost: "Varies by state" },
+                    ].map(({ label, cost }) => (
+                      <div key={label} className="flex justify-between text-xs border border-border/50 rounded-lg px-3 py-2">
+                        <span className="text-muted-foreground">{label}</span>
+                        <span className="font-semibold text-foreground">{cost}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Dedicated vs Load Board */}
+            <div className="space-y-3">
+              <h3 className="font-bold text-base">Dedicated Freight vs Load Board</h3>
+              <Card className="border-primary/30 bg-primary/5">
+                <CardContent className="pt-4 pb-4">
+                  <p className="text-xs text-muted-foreground mb-3">Dedicated freight is always the goal. You can mix dedicated routes with on-demand apps, but on-demand alone can leave you working more for less money.</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                    {[
+                      { label: "Consistent", desc: "At least one load per week per shipping lane" },
+                      { label: "Stable Rates", desc: "Rates stay fixed for the duration of the contract" },
+                      { label: "Long-Term", desc: "Agreements are typically annual" },
+                      { label: "Efficient", desc: "Usually drop trailer — reduces driver detention" },
+                    ].map(({ label, desc }) => (
+                      <div key={label} className="text-xs space-y-0.5">
+                        <p className="font-semibold text-primary">{label}</p>
+                        <p className="text-muted-foreground">{desc}</p>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* Know Your Numbers */}
+            <div className="space-y-3">
+              <h3 className="font-bold text-base">Know Your Numbers (CPM)</h3>
+              <Card className="border-border/60">
+                <CardContent className="pt-4 pb-4 space-y-3">
+                  <p className="text-xs font-semibold text-destructive">If you do not know how much it costs to operate your business, you will fail.</p>
+                  <p className="text-xs text-muted-foreground">Calculate your Cost Per Mile (CPM) by adding up all monthly costs, then dividing by total miles driven.</p>
+                  <div className="space-y-1">
+                    <p className="text-xs font-semibold text-muted-foreground uppercase tracking-wide">Example Monthly Costs:</p>
+                    {[
+                      ["Truck Payment", "$1,000"],
+                      ["Insurance", "$1,800"],
+                      ["Driver Pay (yourself)", "$4,000"],
+                      ["Maintenance Fund", "$1,200"],
+                      ["Business Savings", "$1,500"],
+                      ["Estimated Fuel", "~$3,000"],
+                      ["Monthly Break-Even", "$12,500"],
+                      ["Weekly Break-Even", "~$3,125"],
+                    ].map(([label, val]) => (
+                      <div key={label} className={`flex justify-between text-xs px-3 py-1.5 rounded ${
+                        label.includes("Break-Even") ? "bg-primary/10 border border-primary/30 font-semibold" : "border border-border/40"
+                      }`}>
+                        <span className="text-muted-foreground">{label}</span>
+                        <span className={label.includes("Break-Even") ? "text-primary" : ""}>{val}</span>
+                      </div>
+                    ))}
+                  </div>
+                </CardContent>
+              </Card>
+            </div>
+
+            {/* On-Demand Apps */}
+            <div className="space-y-3">
+              <h3 className="font-bold text-base">On-Demand & Load Board Apps</h3>
+              <p className="text-xs text-muted-foreground">Use these to supplement income between dedicated routes or while getting started. See the On-Demand Apps tab for full details.</p>
+              <div className="flex flex-wrap gap-2">
+                {["Dispatch It","Rapid US","Roadie","Uber Eats","DoorDash","Lugg","Pickup","Part Runner","Curri","Shipt","Senpex","Medzoomer","Try Hungry","Metro Speedy","Dolly","Bungii","Boomerang","uShip","Go Share","Veho","Frayt","Metrobi","Mothership","Dropoff","Shiply","Veyo","CBDriver"].map((app) => (
+                  <span key={app} className="text-xs bg-muted/60 text-muted-foreground px-2.5 py-1 rounded-full border border-border/50">{app}</span>
+                ))}
+              </div>
+            </div>
+
+            {/* Contact info */}
+            <div className="border border-border/40 rounded-xl p-4 text-center">
+              <p className="text-xs text-muted-foreground">Need help? Contact Six Figure Courier support at{" "}
+                <a href="mailto:info@pushlimitsdaily.com" className="text-primary hover:underline">info@pushlimitsdaily.com</a>
+              </p>
+            </div>
           </div>
         )}
 
